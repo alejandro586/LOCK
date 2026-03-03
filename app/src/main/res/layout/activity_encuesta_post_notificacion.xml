@@ -27,6 +27,7 @@
         app:cardElevation="4dp"
         app:strokeColor="@color/turquesa"
         app:strokeWidth="2dp"
+        app:cardCheckedBackgroundColor="@color/turquesa_30"
         app:layout_constraintTop_toBottomOf="@id/survey_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -40,6 +41,62 @@
             android:textSize="18sp"
             android:textColor="@color/blanco"
             android:buttonTint="@color/turquesa"
+            android:drawableStart="@drawable/ic_check"
+            android:drawablePadding="16dp"
+            android:padding="24dp"/>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_zona"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="4dp"
+        app:strokeColor="@color/azul"
+        app:strokeWidth="2dp"
+        app:cardCheckedBackgroundColor="@color/azul_30"
+        app:layout_constraintTop_toBottomOf="@id/card_si"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
+
+        <RadioButton
+            android:id="@+id/radio_zona_peligrosa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Zona peligrosa"
+            android:textSize="18sp"
+            android:textColor="@color/blanco"
+            android:buttonTint="@color/azul"
+            android:drawableStart="@drawable/ic_warning"
+            android:drawablePadding="16dp"
+            android:padding="24dp"/>
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/card_falso"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="24dp"
+        app:cardElevation="4dp"
+        app:strokeColor="@color/rojo"
+        app:strokeWidth="2dp"
+        app:cardCheckedBackgroundColor="@color/rojo_30"
+        app:layout_constraintTop_toBottomOf="@id/card_zona"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="16dp">
+
+        <RadioButton
+            android:id="@+id/radio_falso"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Falso positivo"
+            android:textSize="18sp"
+            android:textColor="@color/blanco"
+            android:buttonTint="@color/rojo"
+            android:drawableStart="@drawable/ic_cancel"
+            android:drawablePadding="16dp"
             android:padding="24dp"/>
     </com.google.android.material.card.MaterialCardView>
 
@@ -47,7 +104,7 @@
         android:id="@+id/submit_survey"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:text="Enviar confirmación"
+        android:text="Confirmar y Enviar"
         android:textSize="18sp"
         app:cornerRadius="28dp"
         android:backgroundTint="@color/turquesa"
@@ -55,6 +112,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="48dp"
+        android:layout_marginBottom="64dp"
         android:enabled="false"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

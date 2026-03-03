@@ -14,16 +14,18 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/report_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Reportar Robo"
         android:src="@drawable/ic_alert_red"
         app:backgroundTint="@color/rojo"
-        app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_margin="24dp"/>
+        app:layout_constraintHorizontal_bias="0.5"
+        android:layout_marginBottom="24dp"/>
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/chip_group_legend"
@@ -39,6 +41,17 @@
             app:chipBackgroundColor="@color/rojo_30"
             app:chipStrokeColor="@color/rojo"
             app:chipStrokeWidth="2dp"/>
-        <!-- agregar más chips -->
+
+        <com.google.android.material.chip.Chip
+            android:text="Zonas Amarillas"
+            app:chipBackgroundColor="@color/amarillo_30"
+            app:chipStrokeColor="@color/amarillo"
+            app:chipStrokeWidth="2dp"/>
+
+        <com.google.android.material.chip.Chip
+            android:text="Zonas Verdes"
+            app:chipBackgroundColor="@color/turquesa_30"
+            app:chipStrokeColor="@color/turquesa"
+            app:chipStrokeWidth="2dp"/>
     </com.google.android.material.chip.ChipGroup>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primarios / Acciones -->
-    <color name="rojo">#EF4444</color>               <!-- Alertas, reportar, error -->
-    <color name="rojo_dark">#B91C1C</color>
-    <color name="rojo_30">#4BEF4444</color>          <!-- 30% opacidad para fondos suaves -->
+    <color name="rojo">#EF4444</color>               <!-- Alertas, reportar, error principal -->
+    <color name="rojo_dark">#B91C1C</color>           <!-- Variante oscura, destructive -->
+    <color name="rojo_30">#4BEF4444</color>           <!-- Fondos suaves, checked -->
 
-    <color name="turquesa">#14B8A6</color>           <!-- Principal acción, positivo -->
+    <color name="turquesa">#14B8A6</color>           <!-- Acción principal, positivo -->
     <color name="turquesa_dark">#0F766E</color>
     <color name="turquesa_70">#B314B8A6</color>       <!-- Hints, secundarios -->
 
@@ -13,20 +13,39 @@
     <color name="azul_dark">#1D4ED8</color>
     <color name="azul_30">#4A3B82F6</color>
 
+    <!-- Warning / Atención (mejor para "zona peligrosa") -->
+    <color name="naranja">#F97316</color>             <!-- Warning fuerte, zonas medias-altas -->
+    <color name="naranja_dark">#C2410C</color>
+    <color name="naranja_30">#4AF97316</color>
+
+    <!-- Success / Confirmación (para falso positivo OK, enviado) -->
+    <color name="verde">#10B981</color>              <!-- Success, check, confirmado -->
+    <color name="verde_dark">#047857</color>
+    <color name="verde_30">#4A10B981</color>
+
     <!-- Neutros / Fondos / Texto -->
     <color name="blanco">#FFFFFF</color>
-    <color name="blanco_80">#CCFFFFFF</color>         <!-- Texto secundario -->
+    <color name="blanco_80">#CCFFFFFF</color>
     <color name="blanco_70">#B3FFFFFF</color>
     <color name="blanco_60">#99FFFFFF</color>
 
-    <color name="negro">#0F172A</color>               <!-- Para dark mode si lo agregas -->
-    <color name="gris_dark">#1E293B</color>
-    <color name="gris">#64748B</color>
+    <color name="negro">#0F172A</color>               <!-- Dark mode base -->
+    <color name="gris_dark">#1E293B</color>           <!-- Superficies dark -->
+    <color name="gris">#64748B</color>               <!-- Texto secundario, disabled -->
 
     <!-- Transparente / Especiales -->
     <color name="transparente">#00000000</color>
 
-    <!-- Selectors para switches (ejemplo thumb/track) -->
+    <!-- Selectors para switches / estados -->
     <color name="turquesa_selector">#14B8A6</color>
     <color name="rojo_selector">#EF4444</color>
+
+    <!-- Amarillo existente (mantengo para compatibilidad) -->
+    <color name="amarillo">#F59E0B</color>
+    <color name="amarillo_30">#4AF59E0B</color>
+
+    <!-- Material 3 roles extras recomendados (opcional, pero útil) -->
+    <color name="error">#EF4444</color>               <!-- Igual a rojo -->
+    <color name="error_container">#FEE2E2</color>     <!-- Fondo error suave (light) -->
+    <color name="on_error">#FFFFFF</color>            <!-- Texto sobre error -->
 </resources>

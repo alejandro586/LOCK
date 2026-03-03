@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Primarios / Acciones -->
+    <color name="rojo">#EF4444</color>               <!-- Alertas, reportar, error -->
+    <color name="rojo_dark">#B91C1C</color>
+    <color name="rojo_30">#4BEF4444</color>          <!-- 30% opacidad para fondos suaves -->
+
+    <color name="turquesa">#14B8A6</color>           <!-- Principal acción, positivo -->
+    <color name="turquesa_dark">#0F766E</color>
+    <color name="turquesa_70">#B314B8A6</color>       <!-- Hints, secundarios -->
+
+    <color name="azul">#3B82F6</color>               <!-- Confianza, info, premium -->
+    <color name="azul_dark">#1D4ED8</color>
+    <color name="azul_30">#4A3B82F6</color>
+
+    <!-- Neutros / Fondos / Texto -->
+    <color name="blanco">#FFFFFF</color>
+    <color name="blanco_80">#CCFFFFFF</color>         <!-- Texto secundario -->
+    <color name="blanco_70">#B3FFFFFF</color>
+    <color name="blanco_60">#99FFFFFF</color>
+
+    <color name="negro">#0F172A</color>               <!-- Para dark mode si lo agregas -->
+    <color name="gris_dark">#1E293B</color>
+    <color name="gris">#64748B</color>
+
+    <!-- Transparente / Especiales -->
+    <color name="transparente">#00000000</color>
+
+    <!-- Selectors para switches (ejemplo thumb/track) -->
+    <color name="turquesa_selector">#14B8A6</color>
+    <color name="rojo_selector">#EF4444</color>
+</resources>

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?attr/colorControlHighlight">  <!-- ripple turquesa o según tema -->
+
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@color/turquesa" />  <!-- color base del botón -->
+            <corners android:radius="28dp" />
+            <!-- Opcional: stroke para outlined -->
+            <!-- <stroke android:width="2dp" android:color="@color/turquesa" /> -->
+        </shape>
+    </item>
+</ripple>

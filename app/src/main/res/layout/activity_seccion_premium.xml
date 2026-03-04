@@ -17,7 +17,8 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="64dp"/>
+        android:layout_marginTop="64dp"
+        android:contentDescription="Título de sección Premium para máxima protección"/>
 
     <TextView
         android:id="@+id/trial_text"
@@ -29,7 +30,8 @@
         app:layout_constraintTop_toBottomOf="@id/premium_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="8dp"/>
+        android:layout_marginTop="8dp"
+        android:contentDescription="Oferta de prueba gratuita de 7 días"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/benefits_recycler"
@@ -41,6 +43,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginTop="32dp"
         android:orientation="vertical"
+        android:padding="16dp"
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"/>
 
     <com.google.android.material.button.MaterialButton
@@ -53,9 +56,12 @@
         android:backgroundTint="@color/azul"
         android:textColor="@color/blanco"
         app:icon="@drawable/ic_crown"
+        app:iconGravity="textStart"
+        app:rippleColor="@color/azul_30"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginHorizontal="32dp"
-        android:layout_marginBottom="64dp"/>
+        android:layout_marginBottom="64dp"
+        android:contentDescription="Botón para suscribirse a Premium por $4.99 al mes"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

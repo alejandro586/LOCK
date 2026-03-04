@@ -17,88 +17,93 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="64dp"/>
+        android:layout_marginTop="64dp"
+        android:contentDescription="Título de encuesta: ¿Qué ocurrió realmente?"/>
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_si"
+    <RadioGroup
+        android:id="@+id/radio_group"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="4dp"
-        app:strokeColor="@color/turquesa"
-        app:strokeWidth="2dp"
-        app:cardCheckedBackgroundColor="@color/turquesa_30"
         app:layout_constraintTop_toBottomOf="@id/survey_title"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp">
+        android:layout_marginTop="32dp"
+        android:orientation="vertical">
 
-        <RadioButton
-            android:id="@+id/radio_si_robo"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_si"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sí, robo confirmado"
-            android:textSize="18sp"
-            android:textColor="@color/blanco"
-            android:buttonTint="@color/turquesa"
-            android:drawableStart="@drawable/ic_check"
-            android:drawablePadding="16dp"
-            android:padding="24dp"/>
-    </com.google.android.material.card.MaterialCardView>
+            app:cardCornerRadius="24dp"
+            app:cardElevation="4dp"
+            app:strokeColor="@color/turquesa"
+            app:strokeWidth="0dp"
+            app:cardCheckedBackgroundColor="@color/turquesa_30"
+            android:layout_marginBottom="16dp">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_zona"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="4dp"
-        app:strokeColor="@color/azul"
-        app:strokeWidth="2dp"
-        app:cardCheckedBackgroundColor="@color/azul_30"
-        app:layout_constraintTop_toBottomOf="@id/card_si"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp">
+            <RadioButton
+                android:id="@+id/radio_si_robo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Sí, robo confirmado"
+                android:textSize="18sp"
+                android:textColor="@color/blanco"
+                android:buttonTint="@color/turquesa"
+                android:drawableStart="@drawable/ic_check"
+                android:drawablePadding="16dp"
+                android:padding="24dp"
+                android:contentDescription="Opción: Sí, robo confirmado"/>
+        </com.google.android.material.card.MaterialCardView>
 
-        <RadioButton
-            android:id="@+id/radio_zona_peligrosa"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_zona"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Zona peligrosa"
-            android:textSize="18sp"
-            android:textColor="@color/blanco"
-            android:buttonTint="@color/azul"
-            android:drawableStart="@drawable/ic_warning"
-            android:drawablePadding="16dp"
-            android:padding="24dp"/>
-    </com.google.android.material.card.MaterialCardView>
+            app:cardCornerRadius="24dp"
+            app:cardElevation="4dp"
+            app:strokeColor="@color/azul"
+            app:strokeWidth="0dp"
+            app:cardCheckedBackgroundColor="@color/azul_30"
+            android:layout_marginBottom="16dp">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_falso"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="4dp"
-        app:strokeColor="@color/rojo"
-        app:strokeWidth="2dp"
-        app:cardCheckedBackgroundColor="@color/rojo_30"
-        app:layout_constraintTop_toBottomOf="@id/card_zona"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp">
+            <RadioButton
+                android:id="@+id/radio_zona_peligrosa"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Zona peligrosa"
+                android:textSize="18sp"
+                android:textColor="@color/blanco"
+                android:buttonTint="@color/azul"
+                android:drawableStart="@drawable/ic_warning"
+                android:drawablePadding="16dp"
+                android:padding="24dp"
+                android:contentDescription="Opción: Zona peligrosa"/>
+        </com.google.android.material.card.MaterialCardView>
 
-        <RadioButton
-            android:id="@+id/radio_falso"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_falso"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Falso positivo"
-            android:textSize="18sp"
-            android:textColor="@color/blanco"
-            android:buttonTint="@color/rojo"
-            android:drawableStart="@drawable/ic_cancel"
-            android:drawablePadding="16dp"
-            android:padding="24dp"/>
-    </com.google.android.material.card.MaterialCardView>
+            app:cardCornerRadius="24dp"
+            app:cardElevation="4dp"
+            app:strokeColor="@color/rojo"
+            app:strokeWidth="0dp"
+            app:cardCheckedBackgroundColor="@color/rojo_30">
+
+            <RadioButton
+                android:id="@+id/radio_falso"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Falso positivo"
+                android:textSize="18sp"
+                android:textColor="@color/blanco"
+                android:buttonTint="@color/rojo"
+                android:drawableStart="@drawable/ic_cancel"
+                android:drawablePadding="16dp"
+                android:padding="24dp"
+                android:contentDescription="Opción: Falso positivo"/>
+        </com.google.android.material.card.MaterialCardView>
+    </RadioGroup>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/submit_survey"
@@ -113,5 +118,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:layout_marginBottom="64dp"
-        android:enabled="false"/>
+        android:enabled="false"
+        android:contentDescription="Botón para confirmar y enviar la encuesta"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

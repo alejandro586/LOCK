@@ -39,7 +39,8 @@
                 app:iconGravity="start"
                 android:checked="false"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintStart_toStartOf="parent"/>
+                app:layout_constraintStart_toStartOf="parent"
+                android:contentDescription="Switch para activar bloqueo total del dispositivo"/>
 
             <com.google.android.material.divider.MaterialDivider
                 android:id="@+id/divider"
@@ -53,7 +54,7 @@
                 android:id="@+id/description"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Bloquea el dispositivo automáticamente si detectamos robo. Se desactiva solo con PIN/huella."
+                android:text="Bloquea el dispositivo automáticamente si detectamos robo. Se desactiva solo con PIN/huella.\n\n• Detecta movimiento sospechoso\n• Integra GPS y sensores\n• Notifica a contactos"
                 android:textColor="@color/blanco_80"
                 android:textSize="16sp"
                 android:lineSpacingExtra="6dp"
@@ -62,7 +63,8 @@
                 app:layout_constraintTop_toBottomOf="@id/divider"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="24dp"/>
+                android:layout_marginTop="24dp"
+                android:contentDescription="Descripción de bloqueo total con beneficios"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -86,6 +88,8 @@
             app:iconGravity="textStart"
             android:textSize="18sp"
             android:backgroundTint="@color/rojo"
-            android:textColor="@color/blanco"/>
+            android:textColor="@color/blanco"
+            app:rippleColor="@color/rojo_30"
+            android:contentDescription="Botón para desbloquear Premium con prueba gratuita"/>
     </com.google.android.material.card.MaterialCardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

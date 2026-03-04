@@ -1,116 +1,155 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.drawerlayout.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_light_black">
 
-    <fragment
-        android:id="@+id/map"
-        android:name="com.google.android.gms.maps.SupportMapFragment"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
-
-    <!-- Overlay Gradient for better visibility of UI elements on top of map -->
-    <View
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="120dp"
-        android:background="@drawable/gradient_rojo_azul_turquesa"
-        android:alpha="0.8"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/search_card"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="16dp"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="8dp"
-        app:cardBackgroundColor="@color/surface_grey"
-        app:strokeWidth="0dp"
-        app:layout_constraintTop_toTopOf="parent">
+        <fragment
+            android:id="@+id/map"
+            android:name="com.google.android.gms.maps.SupportMapFragment"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
-        <LinearLayout
+        <!-- Overlay Gradient moved here to be behind UI elements -->
+        <View
             android:layout_width="match_parent"
+            android:layout_height="120dp"
+            android:background="@drawable/gradient_rojo_azul_turquesa"
+            android:alpha="0.8"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Top Bar with Menu Icon moved after gradient to be on top -->
+        <ImageButton
+            android:id="@+id/btn_menu"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_margin="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_menu"
+            app:tint="@color/primary_turquoise"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/search_card"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="12dp"
-            android:gravity="center_vertical">
+            android:layout_margin="16dp"
+            app:cardCornerRadius="12dp"
+            app:cardElevation="8dp"
+            app:cardBackgroundColor="@color/surface_grey"
+            app:strokeWidth="0dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_menu">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_search"
-                app:tint="@color/primary_turquoise"/>
-
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Buscar zonas seguras..."
-                android:textColor="@color/text_grey"
-                android:layout_marginStart="12dp"
-                android:textSize="16sp"/>
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:gravity="center_vertical">
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/report_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="REPORTAR INCIDENTE"
-        android:textColor="@color/text_white"
-        app:icon="@drawable/ic_alert_red"
-        app:iconTint="@color/text_white"
-        app:backgroundTint="@color/rojo"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="32dp"
-        app:elevation="8dp"/>
+                <ImageView
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:src="@drawable/ic_search"
+                    app:tint="@color/primary_turquoise"/>
 
-    <HorizontalScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:scrollbars="none"
-        app:layout_constraintBottom_toTopOf="@id/report_button"
-        android:layout_marginBottom="16dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Buscar..."
+                    android:textColor="@color/text_grey"
+                    android:layout_marginStart="12dp"
+                    android:textSize="16sp"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.chip.ChipGroup
-            android:id="@+id/chip_group_legend"
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/report_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp"
-            app:singleLine="true"
-            app:singleSelection="false">
+            android:text="REPORTAR INCIDENTE"
+            android:textColor="@color/text_white"
+            app:icon="@drawable/ic_alert_red"
+            app:iconTint="@color/text_white"
+            app:backgroundTint="@color/rojo"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="32dp"
+            app:elevation="8dp"/>
 
-            <com.google.android.material.chip.Chip
-                android:text="Zonas Rojas"
-                style="@style/Widget.Material3.Chip.Filter"
-                app:chipBackgroundColor="@color/surface_grey"
-                app:chipStrokeColor="@color/rojo"
-                app:chipStrokeWidth="1dp"
-                android:textColor="@color/text_white"/>
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none"
+            app:layout_constraintBottom_toTopOf="@id/report_button"
+            android:layout_marginBottom="16dp">
 
-            <com.google.android.material.chip.Chip
-                android:text="Zonas Amarillas"
-                style="@style/Widget.Material3.Chip.Filter"
-                app:chipBackgroundColor="@color/surface_grey"
-                app:chipStrokeColor="@color/amarillo"
-                app:chipStrokeWidth="1dp"
-                android:textColor="@color/text_white"/>
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/chip_group_legend"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp"
+                app:singleLine="true">
 
-            <com.google.android.material.chip.Chip
-                android:text="Seguro"
-                style="@style/Widget.Material3.Chip.Filter"
-                app:chipBackgroundColor="@color/surface_grey"
-                app:chipStrokeColor="@color/primary_turquoise"
-                app:chipStrokeWidth="1dp"
-                android:textColor="@color/text_white"/>
-        </com.google.android.material.chip.ChipGroup>
-    </HorizontalScrollView>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_red_zones"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Zonas Peligrosas"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    app:chipBackgroundColor="@color/surface_grey"
+                    app:chipStrokeColor="@color/rojo"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/text_white"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_yellow_zones"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Zonas Riesgosas"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    app:chipBackgroundColor="@color/surface_grey"
+                    app:chipStrokeColor="@color/amarillo"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/text_white"/>
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_safe_zones"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Seguro"
+                    style="@style/Widget.Material3.Chip.Filter"
+                    app:chipBackgroundColor="@color/surface_grey"
+                    app:chipStrokeColor="@color/primary_turquoise"
+                    app:chipStrokeWidth="1dp"
+                    android:textColor="@color/text_white"/>
+            </com.google.android.material.chip.ChipGroup>
+        </HorizontalScrollView>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="end"
+        android:background="@color/surface_grey"
+        app:headerLayout="@layout/nav_header_main"
+        app:menu="@menu/drawer_menu"
+        app:itemTextColor="@color/text_white"
+        app:itemIconTint="@color/primary_turquoise" />
+
+</androidx.drawerlayout.widget.DrawerLayout>

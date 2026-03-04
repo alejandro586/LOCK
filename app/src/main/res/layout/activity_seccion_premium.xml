@@ -6,6 +6,16 @@
     android:background="@color/bg_light_black"
     android:padding="24dp">
 
+    <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_back"
+        app:tint="@color/text_white"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <!-- Ícono Superior (Estrella Premium) -->
     <ImageView
         android:id="@+id/iv_premium_icon"

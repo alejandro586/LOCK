@@ -1,6 +1,6 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Tema base de la app (Profesional Dark/Modern) -->
-    <style name="Theme.TuAppSeguridad" parent="Theme.Material3.DayNight.NoActionBar">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.LockApp" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Colores base -->
         <item name="colorPrimary">@color/primary_turquoise</item>
         <item name="colorOnPrimary">@color/bg_light_black</item>
@@ -25,7 +25,12 @@
 
         <!-- Estilo para MaterialButtons de texto -->
         <item name="materialButtonStyle">@style/Widget.App.Button</item>
+
+        <!-- Necesario para TextInputLayout -->
+        <item name="isLightTheme">false</item>
     </style>
+
+    <style name="Theme.LockApp" parent="Base.Theme.LockApp" />
 
     <style name="TextAppearance.App.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
         <item name="android:textColor">@color/text_white</item>

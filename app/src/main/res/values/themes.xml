@@ -1,22 +1,47 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Tema base de la app (light) -->
-    <style name="Theme.TuAppSeguridad" parent="Theme.Material3.DayNight.NoActionBar">
-        <!-- Colores base (sobrescriben si no usas dynamic) -->
-        <item name="colorPrimary">@color/turquesa</item>
-        <item name="colorPrimaryVariant">@color/turquesa_dark</item>
-        <item name="colorOnPrimary">@color/blanco</item>
+    <!-- Base application theme. -->
+    <style name="Base.Theme.LockApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Colores base -->
+        <item name="colorPrimary">@color/primary_turquoise</item>
+        <item name="colorOnPrimary">@color/bg_light_black</item>
+        <item name="colorPrimaryContainer">@color/primary_dark</item>
+        <item name="colorOnPrimaryContainer">@color/text_white</item>
 
-        <item name="colorSecondary">@color/rojo</item>
-        <item name="colorSecondaryVariant">@color/rojo_dark</item>
-        <item name="colorOnSecondary">@color/blanco</item>
+        <item name="colorSecondary">@color/surface_grey</item>
+        <item name="colorOnSecondary">@color/text_white</item>
 
-        <item name="android:statusBarColor">@android:color/transparent</item>
-        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowBackground">@color/bg_light_black</item>
+        <item name="android:statusBarColor">@color/bg_light_black</item>
+        <item name="android:navigationBarColor">@color/bg_light_black</item>
 
-        <!-- Mejora contraste en status bar (lo que te pasé) -->
-        <item name="android:enforceStatusBarContrast">true</item>
+        <!-- Colores de texto globales para asegurar visibilidad en fondo oscuro -->
+        <item name="android:textColorPrimary">@color/text_white</item>
+        <item name="android:textColorSecondary">@color/text_grey</item>
+        <item name="android:textColorHint">@color/text_grey</item>
 
-        <!-- Si usas diálogos flotantes (no recomendado para app full screen) -->
-        <!-- <item name="android:windowIsFloating">false</item> -->  <!-- quítalo o ponlo solo en temas de dialog -->
+        <!-- Configuración de estilos de componentes -->
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.App.HeadlineLarge</item>
+        <item name="textAppearanceBodyMedium">@style/TextAppearance.App.BodyMedium</item>
+
+        <!-- Estilo para MaterialButtons de texto -->
+        <item name="materialButtonStyle">@style/Widget.App.Button</item>
+
+        <!-- Necesario para TextInputLayout -->
+        <item name="isLightTheme">false</item>
+    </style>
+
+    <style name="Theme.LockApp" parent="Base.Theme.LockApp" />
+
+    <style name="TextAppearance.App.HeadlineLarge" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:textColor">@color/text_white</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="TextAppearance.App.BodyMedium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textColor">@color/text_grey</item>
+    </style>
+
+    <style name="Widget.App.Button" parent="Widget.Material3.Button">
+        <!-- Por defecto los botones tendrán texto que contraste -->
     </style>
 </resources>

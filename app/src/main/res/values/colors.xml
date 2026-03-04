@@ -1,51 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primarios / Acciones -->
-    <color name="rojo">#EF4444</color>               <!-- Alertas, reportar, error principal -->
-    <color name="rojo_dark">#B91C1C</color>           <!-- Variante oscura, destructive -->
-    <color name="rojo_30">#4BEF4444</color>           <!-- Fondos suaves, checked -->
+    <!-- PALETA PRINCIPAL PROFESIONAL -->
+    <color name="primary_turquoise">#00ADB5</color>    <!-- Azul Turquesa -->
+    <color name="primary_dark">#088186</color>
+    <color name="bg_light_black">#222831</color>      <!-- Negro Claro (Fondo) -->
+    <color name="surface_grey">#393E46</color>        <!-- Gris (Tarjetas/Componentes) -->
 
-    <color name="turquesa">#14B8A6</color>           <!-- Acción principal, positivo -->
-    <color name="turquesa_dark">#0F766E</color>
-    <color name="turquesa_70">#B314B8A6</color>       <!-- Hints, secundarios -->
+    <!-- COLORES DE TEXTO (Garantizan visibilidad en fondo oscuro) -->
+    <color name="text_white">#EEEEEE</color>          <!-- Texto principal (Claro) -->
+    <color name="text_grey">#9DA4B0</color>           <!-- Texto secundario (Gris suave) -->
+    <color name="text_main">#EEEEEE</color>           <!-- Alias para compatibilidad -->
 
-    <color name="azul">#3B82F6</color>               <!-- Confianza, info, premium -->
-    <color name="azul_dark">#1D4ED8</color>
-    <color name="azul_30">#4A3B82F6</color>
+    <!-- COMPATIBILIDAD Y ESTADOS -->
+    <color name="turquesa">#00ADB5</color>
+    <color name="turquesa_dark">#088186</color>
+    <color name="turquesa_30">#4D00ADB5</color>
 
-    <!-- Warning / Atención (mejor para "zona peligrosa") -->
-    <color name="naranja">#F97316</color>             <!-- Warning fuerte, zonas medias-altas -->
-    <color name="naranja_dark">#C2410C</color>
-    <color name="naranja_30">#4AF97316</color>
+    <color name="negro">#222831</color>
+    <color name="gris">#393E46</color>
+    <color name="gris_dark">#1A1E24</color>
 
-    <!-- Success / Confirmación (para falso positivo OK, enviado) -->
-    <color name="verde">#10B981</color>              <!-- Success, check, confirmado -->
-    <color name="verde_dark">#047857</color>
-    <color name="verde_30">#4A10B981</color>
+    <color name="blanco">#EEEEEE</color>
+    <color name="blanco_80">#CCEEEEEE</color>
+    <color name="blanco_70">#B3EEEEEE</color>
+    <color name="blanco_60">#99EEEEEE</color>
 
-    <!-- Neutros / Fondos / Texto -->
-    <color name="blanco">#FFFFFF</color>
-    <color name="blanco_80">#CCFFFFFF</color>
-    <color name="blanco_70">#B3FFFFFF</color>
-    <color name="blanco_60">#99FFFFFF</color>
+    <color name="rojo">#FF4D4D</color>
+    <color name="rojo_dark">#C62828</color>
+    <color name="rojo_30">#4DFF4D4D</color>
 
-    <color name="negro">#0F172A</color>               <!-- Dark mode base -->
-    <color name="gris_dark">#1E293B</color>           <!-- Superficies dark -->
-    <color name="gris">#64748B</color>               <!-- Texto secundario, disabled -->
+    <color name="amarillo">#FFD369</color>
+    <color name="amarillo_30">#4DFFD369</color>
 
-    <!-- Transparente / Especiales -->
+    <color name="verde">#00C853</color>
+    <color name="azul">#00ADB5</color>
+
     <color name="transparente">#00000000</color>
-
-    <!-- Selectors para switches / estados -->
-    <color name="turquesa_selector">#14B8A6</color>
-    <color name="rojo_selector">#EF4444</color>
-
-    <!-- Amarillo existente (mantengo para compatibilidad) -->
-    <color name="amarillo">#F59E0B</color>
-    <color name="amarillo_30">#4AF59E0B</color>
-
-    <!-- Material 3 roles extras recomendados (opcional, pero útil) -->
-    <color name="error">#EF4444</color>               <!-- Igual a rojo -->
-    <color name="error_container">#FEE2E2</color>     <!-- Fondo error suave (light) -->
-    <color name="on_error">#FFFFFF</color>            <!-- Texto sobre error -->
 </resources>

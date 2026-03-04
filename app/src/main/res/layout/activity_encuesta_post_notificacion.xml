@@ -3,115 +3,244 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/gradient_rojo_azul_turquesa"
+    android:background="@color/bg_light_black"
     android:padding="24dp">
 
+    <ImageButton
+        android:id="@+id/btn_back"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:src="@drawable/ic_back"
+        app:tint="#FFFFFF"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Ícono de Cabecera -->
+    <ImageView
+        android:id="@+id/iv_header_icon"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="32dp"
+        android:src="@drawable/ic_shield_security"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:tint="#00BFA6" />
+
+    <!-- Título Principal -->
     <TextView
-        android:id="@+id/survey_title"
+        android:id="@+id/tv_survey_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:gravity="center"
         android:text="¿Qué ocurrió realmente?"
-        android:textSize="28sp"
+        android:textColor="#FFFFFF"
+        android:textSize="26sp"
         android:textStyle="bold"
-        android:textColor="@color/blanco"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="64dp"/>
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/iv_header_icon" />
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_si"
+    <!-- Subtítulo Explicativo -->
+    <TextView
+        android:id="@+id/tv_survey_subtitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="4dp"
-        app:strokeColor="@color/turquesa"
-        app:strokeWidth="2dp"
-        app:cardCheckedBackgroundColor="@color/turquesa_30"
-        app:layout_constraintTop_toBottomOf="@id/survey_title"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:text="Tu respuesta nos ayuda a mejorar la precisión de las alertas en tu zona."
+        android:textColor="#9DA4B0"
+        android:textSize="14sp"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_survey_title" />
 
-        <RadioButton
-            android:id="@+id/radio_si_robo"
+    <!-- Información de Contexto -->
+    <LinearLayout
+        android:id="@+id/ll_context_info"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center"
+        android:orientation="vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_survey_subtitle">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="📍 Av. Brasil - Jesús María"
+            android:textColor="#9DA4B0"
+            android:textSize="12sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="⏰ Reportado hace 3 minutos"
+            android:textColor="#9DA4B0"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- Opciones de Respuesta -->
+    <LinearLayout
+        android:id="@+id/ll_options"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toBottomOf="@+id/ll_context_info">
+
+        <!-- Opción 1: Robo Confirmado -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_robo_confirmado"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Sí, robo confirmado"
-            android:textSize="18sp"
-            android:textColor="@color/blanco"
-            android:buttonTint="@color/turquesa"
-            android:drawableStart="@drawable/ic_check"
-            android:drawablePadding="16dp"
-            android:padding="24dp"/>
-    </com.google.android.material.card.MaterialCardView>
+            android:layout_marginBottom="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardBackgroundColor="@color/surface_grey"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:rippleColor="#3300BFA6"
+            app:strokeWidth="0dp">
 
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_zona"
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="20dp">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_warning"
+                    app:tint="#00BFA6" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Sí, fue un robo confirmado"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Opción 2: Zona Peligrosa -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_zona_peligrosa"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardBackgroundColor="@color/surface_grey"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:rippleColor="#3300BFA6"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="20dp">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@android:drawable/stat_sys_warning"
+                    app:tint="#00BFA6" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Solo zona peligrosa"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Opción 3: Falso Positivo -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_falso_positivo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:clickable="true"
+            android:focusable="true"
+            app:cardBackgroundColor="@color/surface_grey"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="4dp"
+            app:rippleColor="#3300BFA6"
+            app:strokeWidth="0dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:padding="20dp">
+
+                <ImageView
+                    android:layout_width="28dp"
+                    android:layout_height="28dp"
+                    android:src="@drawable/ic_cancel"
+                    app:tint="#00BFA6" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:text="Falso positivo / Error"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+    </LinearLayout>
+
+    <!-- Texto de Privacidad al Final -->
+    <TextView
+        android:id="@+id/tv_footer_note"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="4dp"
-        app:strokeColor="@color/azul"
-        app:strokeWidth="2dp"
-        app:cardCheckedBackgroundColor="@color/azul_30"
-        app:layout_constraintTop_toBottomOf="@id/card_si"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp">
-
-        <RadioButton
-            android:id="@+id/radio_zona_peligrosa"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Zona peligrosa"
-            android:textSize="18sp"
-            android:textColor="@color/blanco"
-            android:buttonTint="@color/azul"
-            android:drawableStart="@drawable/ic_warning"
-            android:drawablePadding="16dp"
-            android:padding="24dp"/>
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_falso"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:cardCornerRadius="24dp"
-        app:cardElevation="4dp"
-        app:strokeColor="@color/rojo"
-        app:strokeWidth="2dp"
-        app:cardCheckedBackgroundColor="@color/rojo_30"
-        app:layout_constraintTop_toBottomOf="@id/card_zona"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="16dp">
-
-        <RadioButton
-            android:id="@+id/radio_falso"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Falso positivo"
-            android:textSize="18sp"
-            android:textColor="@color/blanco"
-            android:buttonTint="@color/rojo"
-            android:drawableStart="@drawable/ic_cancel"
-            android:drawablePadding="16dp"
-            android:padding="24dp"/>
-    </com.google.android.material.card.MaterialCardView>
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/submit_survey"
-        android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:text="Confirmar y Enviar"
-        android:textSize="18sp"
-        app:cornerRadius="28dp"
-        android:backgroundTint="@color/turquesa"
-        android:textColor="@color/blanco"
+        android:layout_marginBottom="16dp"
+        android:gravity="center"
+        android:text="Tu reporte es anónimo y ayuda a mejorar la seguridad."
+        android:textColor="#64748B"
+        android:textSize="11sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="64dp"
-        android:enabled="false"/>
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <!-- Botón de Acción Principal -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_confirm_survey"
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginBottom="12dp"
+        android:backgroundTint="#00BFA6"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        android:text="Confirmar respuesta"
+        android:textAllCaps="false"
+        android:textColor="#121212"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:cornerRadius="16dp"
+        app:layout_constraintBottom_toTopOf="@+id/tv_footer_note"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

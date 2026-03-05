@@ -6,6 +6,7 @@
     android:background="@color/bg_light_black"
     android:padding="24dp">
 
+    <!-- Botón atrás -->
     <ImageButton
         android:id="@+id/btn_back"
         android:layout_width="48dp"
@@ -16,193 +17,138 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Ícono Superior (Estrella Premium) -->
+    <!-- Ícono corona premium -->
     <ImageView
         android:id="@+id/iv_premium_icon"
-        android:layout_width="90dp"
-        android:layout_height="90dp"
-        android:layout_marginTop="32dp"
-        android:src="@android:drawable/btn_star_big_on"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_width="110dp"
+        android:layout_height="110dp"
+        android:layout_marginTop="48dp"
+        android:src="@drawable/ic_crown"
+        app:tint="#00BFA6"
         app:layout_constraintTop_toTopOf="parent"
-        app:tint="#00BFA6" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Título -->
     <TextView
         android:id="@+id/tv_premium_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
         android:text="Premium Protection"
         android:textColor="#FFFFFF"
-        android:textSize="26sp"
+        android:textSize="30sp"
         android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="24dp"
+        app:layout_constraintTop_toBottomOf="@id/iv_premium_icon"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/iv_premium_icon" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <!-- Subtítulo -->
     <TextView
         android:id="@+id/tv_premium_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Únete a +10,000 usuarios protegidos"
+        android:text="Desbloquea todas las funciones avanzadas"
         android:textColor="#00BFA6"
         android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp"
+        app:layout_constraintTop_toBottomOf="@id/tv_premium_title"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_premium_title" />
+        app:layout_constraintEnd_toEndOf="parent" />
 
-    <!-- Card de Beneficios -->
+    <!-- Tabla comparativa -->
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/cv_benefits"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
         app:cardBackgroundColor="@color/surface_grey"
         app:cardCornerRadius="20dp"
-        app:cardElevation="0dp"
-        app:strokeWidth="0dp"
-        app:layout_constraintTop_toBottomOf="@+id/tv_premium_subtitle">
+        app:layout_constraintTop_toBottomOf="@id/tv_premium_subtitle"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="40dp">
 
-        <LinearLayout
+        <TableLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="24dp">
+            android:stretchColumns="*"
+            android:padding="20dp">
 
-            <!-- Beneficio 1: Alertas -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_warning"
-                    app:tint="#00BFA6" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Alertas en tiempo real de zonas críticas"
-                    android:textColor="#FFFFFF"
-                    android:textSize="15sp" />
-            </LinearLayout>
+            <TableRow>
+                <TextView android:text="Función" android:textStyle="bold" android:textColor="#FFFFFF" android:padding="14dp"/>
+                <TextView android:text="Free" android:textStyle="bold" android:textColor="#FFFFFF" android:gravity="center" android:padding="14dp"/>
+                <TextView android:text="Premium" android:textStyle="bold" android:textColor="#FFFFFF" android:gravity="center" android:padding="14dp"/>
+            </TableRow>
 
-            <!-- Beneficio 2: Bloqueo -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_lock"
-                    app:tint="#00BFA6" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Bloqueo remoto inteligente"
-                    android:textColor="#FFFFFF"
-                    android:textSize="15sp" />
-            </LinearLayout>
+            <!-- filas de comparación -->
+            <TableRow>
+                <TextView android:text="Compartir ubicación en tiempo real" android:textColor="#FFFFFF" android:padding="14dp"/>
+                <ImageView android:src="@drawable/ic_cancel" app:tint="#FF5252" android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center"/>
+                <ImageView android:src="@drawable/ic_check" app:tint="#00BFA6" android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center"/>
+            </TableRow>
 
-            <!-- Beneficio 3: Soporte -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_shield_security"
-                    app:tint="#00BFA6" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Soporte prioritario 24/7"
-                    android:textColor="#FFFFFF"
-                    android:textSize="15sp" />
-            </LinearLayout>
+            <!-- ... agrega las otras filas que ya tenías ... -->
 
-            <!-- Beneficio 4: Notificaciones -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@android:drawable/ic_dialog_info"
-                    app:tint="#00BFA6" />
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:text="Notificaciones anticipadas de riesgo"
-                    android:textColor="#FFFFFF"
-                    android:textSize="15sp" />
-            </LinearLayout>
-
-        </LinearLayout>
+        </TableLayout>
     </com.google.android.material.card.MaterialCardView>
 
-    <!-- Precio -->
-    <TextView
-        android:id="@+id/tv_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="48dp"
-        android:text="S/ 9.90 / mes"
-        android:textColor="#FFFFFF"
-        android:textSize="32sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cv_benefits" />
-
-    <!-- Footer -->
-    <TextView
-        android:id="@+id/tv_trial_note"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="Prueba 7 días gratis. Cancela en cualquier momento."
-        android:textColor="#9DA4B0"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@+id/btn_activate_premium"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <!-- Botón -->
+    <!-- Botón para ver novedades / mejoras detalladas -->
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_activate_premium"
+        android:id="@+id/btn_view_novedades"
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:layout_marginHorizontal="32dp"
-        android:layout_marginBottom="24dp"
-        android:backgroundTint="#00BFA6"
-        android:text="Activar Premium"
+        android:text="Ver qué hay de nuevo en Premium"
         android:textAllCaps="false"
         android:textColor="#121212"
         android:textSize="18sp"
         android:textStyle="bold"
-        app:cornerRadius="12dp"
-        app:elevation="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:backgroundTint="#00BFA6"
+        app:cornerRadius="16dp"
+        app:layout_constraintTop_toBottomOf="@id/cv_benefits"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        android:layout_marginTop="32dp"/>
+
+    <!-- Precio y trial -->
+    <TextView
+        android:id="@+id/tv_price"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="S/ 9.90 / mes"
+        android:textColor="#FFFFFF"
+        android:textSize="34sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/btn_view_novedades"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="32dp"/>
+
+    <TextView
+        android:id="@+id/tv_trial_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Prueba 7 días gratis • Cancela cuando quieras"
+        android:textColor="#9DA4B0"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@id/btn_activate_premium"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="16dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_activate_premium"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
+        android:text="Activar Premium ahora"
+        android:textAllCaps="false"
+        android:textColor="#121212"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        app:backgroundTint="#00BFA6"
+        app:cornerRadius="20dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="40dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

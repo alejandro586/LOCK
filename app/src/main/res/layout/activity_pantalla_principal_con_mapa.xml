@@ -10,6 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <!-- Mapa completo -->
         <fragment
             android:id="@+id/map"
             android:name="com.google.android.gms.maps.SupportMapFragment"
@@ -20,7 +21,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"/>
 
-        <!-- Overlay Gradient moved here to be behind UI elements -->
+        <!-- Gradient superior -->
         <View
             android:layout_width="match_parent"
             android:layout_height="120dp"
@@ -28,7 +29,7 @@
             android:alpha="0.8"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Top Bar with Menu Icon moved after gradient to be on top -->
+        <!-- Botón menú -->
         <ImageButton
             android:id="@+id/btn_menu"
             android:layout_width="48dp"
@@ -40,6 +41,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />
 
+        <!-- Barra de búsqueda -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/search_card"
             android:layout_width="0dp"
@@ -76,21 +78,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/report_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="REPORTAR INCIDENTE"
-            android:textColor="@color/text_white"
-            app:icon="@drawable/ic_alert_red"
-            app:iconTint="@color/text_white"
-            app:backgroundTint="@color/rojo"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginBottom="32dp"
-            app:elevation="8dp"/>
-
+        <!-- Chips de zonas (abajo, como estaba originalmente) -->
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -139,6 +127,36 @@
                     android:textColor="@color/text_white"/>
             </com.google.android.material.chip.ChipGroup>
         </HorizontalScrollView>
+
+        <!-- FAB reportar incidente -->
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/report_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="REPORTAR INCIDENTE"
+            android:textColor="@color/text_white"
+            app:icon="@drawable/ic_alert_red"
+            app:iconTint="@color/text_white"
+            app:backgroundTint="@color/rojo"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="32dp"
+            app:elevation="8dp"/>
+
+        <!-- FAB compartir ubicación (agregado, pero opcional si no lo quieres) -->
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/share_location_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/ic_share"
+            app:backgroundTint="@color/primary_turquoise"
+            app:tint="@color/text_white"
+            app:layout_constraintBottom_toTopOf="@id/report_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginBottom="16dp"
+            android:layout_marginEnd="16dp"/>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <com.google.android.material.navigation.NavigationView

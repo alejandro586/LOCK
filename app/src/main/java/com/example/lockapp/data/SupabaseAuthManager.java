@@ -17,7 +17,6 @@ import okhttp3.Response;
 
 /**
  * Manager de autenticación y operaciones con Supabase usando REST puro (OkHttp + Gson).
- * 100% Java puro. Incluye login y ahora también insertData.
  */
 public class SupabaseAuthManager {
 
@@ -36,7 +35,6 @@ public class SupabaseAuthManager {
         this.context = context.getApplicationContext();
     }
 
-    // Prueba conexión básica
     public void testConnection() {
         new Thread(() -> {
             try {
@@ -47,18 +45,16 @@ public class SupabaseAuthManager {
                         .build();
 
                 Response response = okHttpClient.newCall(request).execute();
-                if (response.isSuccessful()) {
-                    Log.d(TAG, "Conexión OK! Código: " + response.code());
-                } else {
-                    Log.e(TAG, "Error conexión: Código " + response.code() + " - " + response.message());
-                }
+                Log.d(TAG, "Conexión test: " + response.code());
             } catch (IOException e) {
-                Log.e(TAG, "Excepción en testConnection: " + e.getMessage(), e);
+                Log.e(TAG, "Error test conexión", e);
             }
         }).start();
     }
 
-    // Login con email y contraseña
+    // ────────────────────────────────────────────────
+    // LOGIN
+    // ────────────────────────────────────────────────
     public void loginWithEmail(String email, String password, AuthCallback callback) {
         new Thread(() -> {
             try {
@@ -66,82 +62,124 @@ public class SupabaseAuthManager {
                 jsonBody.addProperty("email", email);
                 jsonBody.addProperty("password", password);
 
-                String jsonString = gson.toJson(jsonBody);
-                Log.d(TAG, "Enviando body JSON para login: " + jsonString);
-
-                RequestBody body = RequestBody.create(jsonString, JSON_MEDIA_TYPE);
+                RequestBody body = RequestBody.create(gson.toJson(jsonBody), JSON_MEDIA_TYPE);
 
                 Request request = new Request.Builder()
-                        .url(SUPABASE_URL + "/auth/v1/signinwithpassword")
+                        .url(SUPABASE_URL + "/auth/v1/token?grant_type=password")
                         .post(body)
                         .header("apikey", ANON_KEY)
-                        .header("Authorization", "Bearer " + ANON_KEY)
+                        .header("Content-Type", "application/json")
                         .build();
 
                 Response response = okHttpClient.newCall(request).execute();
                 String responseBody = response.body() != null ? response.body().string() : "";
 
-                Log.d(TAG, "Respuesta login: Código " + response.code() + " - " + responseBody);
+                Log.d(TAG, "Login respuesta: " + response.code() + " → " + responseBody);
 
                 if (response.isSuccessful()) {
-                    JsonObject jsonResponse = gson.fromJson(responseBody, JsonObject.class);
-                    String accessToken = jsonResponse.get("access_token").getAsString();
+                    JsonObject json = gson.fromJson(responseBody, JsonObject.class);
+                    String token = json.get("access_token").getAsString();
 
                     SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
-                    prefs.edit().putString("access_token", accessToken).apply();
+                    prefs.edit().putString("access_token", token).apply();
 
-                    Log.d(TAG, "Login exitoso - Token guardado: " + accessToken);
-                    callback.onSuccess(accessToken);
+                    callback.onSuccess(token);
                 } else {
-                    Log.e(TAG, "Login fallido: Código " + response.code() + " - " + responseBody);
-                    callback.onError(response.code() + ": " + responseBody);
+                    callback.onError(response.code() + " - " + responseBody);
                 }
-            } catch (IOException e) {
-                Log.e(TAG, "Excepción en login: " + e.getMessage(), e);
-                callback.onError("Error de red: " + e.getMessage());
+            } catch (Exception e) {
+                callback.onError("Excepción: " + e.getMessage());
             }
         }).start();
     }
 
-    // Insertar datos en cualquier tabla (ej: "reports")
+    // ────────────────────────────────────────────────
+    // SIGNUP (REGISTRO)  ← NUEVO MÉTODO
+    // ────────────────────────────────────────────────
+    public void signUpWithEmail(String email, String password, AuthCallback callback) {
+        new Thread(() -> {
+            try {
+                JsonObject jsonBody = new JsonObject();
+                jsonBody.addProperty("email", email);
+                jsonBody.addProperty("password", password);
+
+                RequestBody body = RequestBody.create(gson.toJson(jsonBody), JSON_MEDIA_TYPE);
+
+                Request request = new Request.Builder()
+                        .url(SUPABASE_URL + "/auth/v1/signup")
+                        .post(body)
+                        .header("apikey", ANON_KEY)
+                        .header("Content-Type", "application/json")
+                        .build();
+
+                Response response = okHttpClient.newCall(request).execute();
+                String responseBody = response.body() != null ? response.body().string() : "";
+
+                Log.d(TAG, "Signup respuesta: " + response.code() + " → " + responseBody);
+
+                if (response.isSuccessful()) {
+                    JsonObject json = gson.fromJson(responseBody, JsonObject.class);
+
+                    // Si confirm email está desactivado → viene token directo
+                    if (json.has("access_token")) {
+                        String token = json.get("access_token").getAsString();
+                        SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
+                        prefs.edit().putString("access_token", token).apply();
+                        callback.onSuccess(token);
+                    } else {
+                        // Caso común: necesita confirmación por email
+                        callback.onSuccess(null); // null = "revisa tu correo"
+                    }
+                } else {
+                    callback.onError(response.code() + " - " + responseBody);
+                }
+            } catch (Exception e) {
+                callback.onError("Excepción: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    // ────────────────────────────────────────────────
+    // INSERTAR DATOS (reports, etc.)
+    // ────────────────────────────────────────────────
     public void insertData(String tableName, JsonObject data, DataCallback callback) {
         new Thread(() -> {
             try {
+                SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
+                String token = prefs.getString("access_token", null);
+                String authHeader = token != null ? "Bearer " + token : "Bearer " + ANON_KEY;
+
                 RequestBody body = RequestBody.create(gson.toJson(data), JSON_MEDIA_TYPE);
 
                 Request request = new Request.Builder()
                         .url(SUPABASE_URL + "/rest/v1/" + tableName)
                         .post(body)
                         .header("apikey", ANON_KEY)
-                        .header("Authorization", "Bearer " + ANON_KEY)
+                        .header("Authorization", authHeader)
                         .header("Content-Type", "application/json")
-                        .header("Prefer", "return=minimal") // No devuelve el registro creado
+                        .header("Prefer", "return=minimal")
                         .build();
 
                 Response response = okHttpClient.newCall(request).execute();
-                String responseBody = response.body() != null ? response.body().string() : "";
+                String bodyStr = response.body() != null ? response.body().string() : "";
 
                 if (response.isSuccessful()) {
-                    Log.d(TAG, "Insert OK en tabla " + tableName);
-                    callback.onSuccess(responseBody);
+                    callback.onSuccess(bodyStr);
                 } else {
-                    Log.e(TAG, "Insert fallido en " + tableName + ": " + response.code() + " - " + responseBody);
-                    callback.onError(response.code() + ": " + responseBody);
+                    callback.onError(response.code() + " - " + bodyStr);
                 }
-            } catch (IOException e) {
-                Log.e(TAG, "Excepción en insertData: " + e.getMessage(), e);
-                callback.onError("Error de red: " + e.getMessage());
+            } catch (Exception e) {
+                callback.onError("Excepción: " + e.getMessage());
             }
         }).start();
     }
 
-    // Interfaz para login
+    // Interfaces
     public interface AuthCallback {
-        void onSuccess(String accessToken);
+        void onSuccess(String accessToken);   // null si necesita confirm email
         void onError(String errorMessage);
     }
 
-    // Interfaz para operaciones de datos (INSERT, UPDATE, etc.)
     public interface DataCallback {
         void onSuccess(String response);
         void onError(String errorMessage);

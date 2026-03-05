@@ -3,7 +3,6 @@ package com.example.lockapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.lockapp.data.SupabaseAuthManager;
@@ -17,72 +16,89 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-        // Instanciamos el manager de autenticación (pasamos context)
-        final SupabaseAuthManager authManager = new SupabaseAuthManager(this);
-
-        // Prueba automática de conexión al abrir la app (opcional)
+        SupabaseAuthManager authManager = new SupabaseAuthManager(this);
         authManager.testConnection();
 
-        // Botón "Ingresar" → login real con email/password
-        binding.loginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "Clic en Ingresar");
+        // ─── LOGIN ───────────────────────────────────────
+        binding.loginButton.setOnClickListener(v -> {
+            String email = binding.email.getText().toString().trim();
+            String password = binding.password.getText().toString().trim();
 
-                // Credenciales de prueba (cámbialas o usa EditText más adelante)
-                String email = "test@example.com";      // ← usa un usuario real de tu Supabase
-                String password = "Password123";        // ← contraseña real
-
-                authManager.loginWithEmail(email, password, new SupabaseAuthManager.AuthCallback() {
-                    @Override
-                    public void onSuccess(String accessToken) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(MainActivity.this, "Login exitoso! Token guardado", Toast.LENGTH_SHORT).show();
-                                Log.d(TAG, "Token guardado: " + accessToken);
-
-                                // Saltamos al mapa después del login
-                                startActivity(new Intent(MainActivity.this, Pantalla_Principal_con_Mapa.class));
-                                finish(); // Cerramos esta pantalla
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onError(String error) {
-                        runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(MainActivity.this, "Error en login: " + error, Toast.LENGTH_LONG).show();
-                                Log.e(TAG, "Error login: " + error);
-                            }
-                        });
-                    }
-                });
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Ingresa correo y contraseña", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            authManager.loginWithEmail(email, password, new SupabaseAuthManager.AuthCallback() {
+                @Override
+                public void onSuccess(String token) {
+                    runOnUiThread(() -> {
+                        Toast.makeText(MainActivity.this, "¡Bienvenido!", Toast.LENGTH_SHORT).show();
+                        startActivity(new Intent(MainActivity.this, Pantalla_Principal_con_Mapa.class));
+                        finish();
+                    });
+                }
+
+                @Override
+                public void onError(String error) {
+                    runOnUiThread(() -> Toast.makeText(MainActivity.this,
+                            "Error al ingresar: " + error, Toast.LENGTH_LONG).show());
+                }
+            });
         });
 
-        // Botón "Registrarse" → por ahora solo mensaje (próximo paso: pantalla registro)
-        binding.registerButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "Clic en Registrarse");
-                Toast.makeText(MainActivity.this, "Registro pendiente de implementar", Toast.LENGTH_SHORT).show();
+        // ─── REGISTRO (ahora funcional) ──────────────────
+        binding.registerButton.setOnClickListener(v -> {
+            String email = binding.email.getText().toString().trim();
+            String password = binding.password.getText().toString().trim();
+
+            if (email.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Completa correo y contraseña", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            if (password.length() < 6) {
+                Toast.makeText(this, "Contraseña mínima 6 caracteres", Toast.LENGTH_LONG).show();
+                return;
+            }
+
+            authManager.signUpWithEmail(email, password, new SupabaseAuthManager.AuthCallback() {
+                @Override
+                public void onSuccess(String token) {
+                    runOnUiThread(() -> {
+                        if (token != null) {
+                            // Signup auto-login (confirm email desactivado)
+                            Toast.makeText(MainActivity.this, "¡Cuenta creada! Bienvenido", Toast.LENGTH_SHORT).show();
+                            startActivity(new Intent(MainActivity.this, Pantalla_Principal_con_Mapa.class));
+                            finish();
+                        } else {
+                            // Confirm email activado
+                            Toast.makeText(MainActivity.this,
+                                    "Cuenta creada. Revisa tu correo para confirmar", Toast.LENGTH_LONG).show();
+                        }
+                    });
+                }
+
+                @Override
+                public void onError(String error) {
+                    runOnUiThread(() -> {
+                        String msg = "Error al registrarte: " + error;
+                        if (error.contains("duplicate key") || error.contains("already registered")) {
+                            msg = "Este correo ya está registrado. Inicia sesión.";
+                        } else if (error.contains("weak password")) {
+                            msg = "Contraseña muy débil. Usa letras, números y mínimo 6 caracteres.";
+                        }
+                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
+                    });
+                }
+            });
         });
 
-        // Botón "Continuar como anónimo"
-        binding.anonymousButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.d(TAG, "Clic en Anónimo");
-                startActivity(new Intent(MainActivity.this, Pantalla_Principal_con_Mapa.class));
-            }
-        });
+        // ─── ANÓNIMO ─────────────────────────────────────
+        binding.anonymousButton.setOnClickListener(v ->
+                startActivity(new Intent(MainActivity.this, Pantalla_Principal_con_Mapa.class)));
     }
 }

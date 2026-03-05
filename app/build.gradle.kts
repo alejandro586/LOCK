@@ -48,6 +48,7 @@ dependencies {
     // OkHttp + Gson para llamadas REST a Supabase (Java puro)
     implementation("com.squareup.okhttp3:okhttp:4.12.0")
     implementation("com.google.code.gson:gson:2.11.0")
+    implementation(libs.play.services.location)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

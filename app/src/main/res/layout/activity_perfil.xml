@@ -55,7 +55,9 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:scaleType="centerInside"
+                android:scaleType="centerCrop"
+                android:clickable="true"
+                android:focusable="true"
                 android:background="@color/surface_grey"/>
 
             <!-- Campos de Información -->
@@ -74,26 +76,42 @@
                     android:orientation="vertical"
                     android:padding="20dp">
 
-                    <!-- Nombre y Apellido -->
+                    <!-- Nombre -->
                     <com.google.android.material.textfield.TextInputLayout
-                        android:id="@+id/name_layout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Nombre y Apellido"
+                        android:hint="Nombre"
                         app:hintTextColor="@color/primary_turquoise"
                         app:boxStrokeColor="@color/primary_turquoise"
                         style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/et_name"
+                            android:id="@+id/et_first_name"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Juan Pérez"
                             android:textColor="@color/text_white"
                             android:textSize="16sp"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Edad con Botones +/- -->
+                    <!-- Apellido -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:hint="Apellido"
+                        app:hintTextColor="@color/primary_turquoise"
+                        app:boxStrokeColor="@color/primary_turquoise"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_last_name"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_white"
+                            android:textSize="16sp"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Edad con Botones +/- (existente) -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -115,7 +133,6 @@
                                 android:id="@+id/et_age"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="28"
                                 android:textColor="@color/text_white"
                                 android:textSize="16sp"
                                 android:inputType="number"/>
@@ -148,7 +165,26 @@
                         </LinearLayout>
                     </LinearLayout>
 
-                    <!-- Correo Electrónico (Solo lectura por ahora) -->
+                    <!-- DNI/Documento -->
+                    <com.google.android.material.textfield.TextInputLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:hint="DNI o Documento de Extranjería"
+                        app:hintTextColor="@color/primary_turquoise"
+                        app:boxStrokeColor="@color/primary_turquoise"
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/et_dni"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/text_white"
+                            android:textSize="16sp"
+                            android:inputType="text"/>
+                    </com.google.android.material.textfield.TextInputLayout>
+
+                    <!-- Correo Electrónico (Editable con precaución) -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/email_layout"
                         android:layout_width="match_parent"
@@ -157,19 +193,18 @@
                         android:hint="Correo Electrónico"
                         app:hintTextColor="@color/primary_turquoise"
                         app:boxStrokeColor="@color/primary_turquoise"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                        android:enabled="false">
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/et_email"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="juan.perez@email.com"
-                            android:textColor="@color/text_grey"
-                            android:textSize="16sp"/>
+                            android:textColor="@color/text_white"
+                            android:textSize="16sp"
+                            android:inputType="textEmailAddress"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Contraseña -->
+                    <!-- Contraseña (Editable con precaución) -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/password_layout"
                         android:layout_width="match_parent"
@@ -186,7 +221,6 @@
                             android:id="@+id/et_password"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="********"
                             android:textColor="@color/text_white"
                             android:textSize="16sp"
                             android:inputType="textPassword"/>
@@ -203,7 +237,7 @@
         android:id="@+id/btn_edit_profile"
         android:layout_width="match_parent"
         android:layout_height="64dp"
-        android:text="Editar Perfil"
+        android:text="Guardar Cambios"
         android:textSize="16sp"
         android:textStyle="bold"
         android:backgroundTint="@color/primary_turquoise"

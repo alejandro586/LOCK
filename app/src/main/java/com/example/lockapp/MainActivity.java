@@ -30,7 +30,14 @@ public class MainActivity extends AppCompatActivity {
 
             authManager.loginWithEmail(email, password, new SupabaseAuthManager.AuthCallback() {
                 @Override
-                public void onSuccess(String token) {
+                public void onSuccess(String userId, String accessToken) {  // ← Ahora con 2 parámetros
+                    // Guarda user_id para usarlo en Perfil.java
+                    getSharedPreferences("auth", MODE_PRIVATE)
+                            .edit()
+                            .putString("access_token", accessToken)
+                            .putString("user_id", userId)  // ← Importante para Perfil
+                            .apply();
+
                     runOnUiThread(() -> {
                         Toast.makeText(MainActivity.this, "¡Bienvenido!", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(MainActivity.this, Pantalla_Principal_con_Mapa.class));
@@ -46,12 +53,8 @@ public class MainActivity extends AppCompatActivity {
             });
         });
 
-        // REGISTRO: Redirige a la nueva vista vacía para el equipo
         binding.registerButton.setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, Registro.class));
         });
-
-        binding.anonymousButton.setOnClickListener(v ->
-                startActivity(new Intent(MainActivity.this, Pantalla_Principal_con_Mapa.class)));
     }
 }

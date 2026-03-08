@@ -15,6 +15,7 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -30,6 +31,7 @@ import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -76,6 +78,7 @@ public class Pantalla_Principal_con_Mapa extends AppCompatActivity implements On
         drawerLayout = findViewById(R.id.drawer_layout);
         NavigationView navigationView = findViewById(R.id.nav_view);
         ImageButton btnMenu = findViewById(R.id.btn_menu);
+        MaterialButton btnLogout = findViewById(R.id.btn_logout);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -87,8 +90,29 @@ public class Pantalla_Principal_con_Mapa extends AppCompatActivity implements On
         setupReportButton();
         setupShareLocationButton();
         setupNavigation(navigationView, btnMenu);
+        
+        btnLogout.setOnClickListener(v -> showLogoutDialog());
 
         checkAndRequestLocationPermission();
+    }
+
+    private void showLogoutDialog() {
+        AlertDialog dialog = new AlertDialog.Builder(this, R.style.CustomAlertDialogTheme)
+                .setTitle("Cerrar Sesión")
+                .setMessage("¿Estas seguro que quieres salir?")
+                .setPositiveButton("Aceptar", (d, which) -> {
+                    Intent intent = new Intent(this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                })
+                .setNegativeButton("Cancelar", (d, which) -> d.dismiss())
+                .create();
+
+        dialog.show();
+
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setTextColor(Color.GREEN);
+        dialog.getButton(AlertDialog.BUTTON_NEGATIVE).setTextColor(Color.RED);
     }
 
     private void checkAndRequestLocationPermission() {
@@ -137,9 +161,7 @@ public class Pantalla_Principal_con_Mapa extends AppCompatActivity implements On
                 new LatLng(-12.040, -77.020), Color.argb(80, 0, 191, 165), Color.CYAN));
     }
 
-    // Método genérico para evitar duplicados y repetir código
     private void toggleZones(List<Circle> circlesList, boolean show, LatLng center, int fillColor, int strokeColor) {
-        // Siempre limpiar primero → evita duplicados al togglear varias veces
         for (Circle c : circlesList) c.remove();
         circlesList.clear();
 
@@ -151,8 +173,6 @@ public class Pantalla_Principal_con_Mapa extends AppCompatActivity implements On
                     .strokeColor(strokeColor)
                     .strokeWidth(3f));
             circlesList.add(circle);
-
-            // Opcional: centrar en la zona al activar
             mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(center, 14f));
         }
     }
@@ -183,7 +203,7 @@ public class Pantalla_Principal_con_Mapa extends AppCompatActivity implements On
                 .fillColor(Color.argb(140, 255, 0, 0))
                 .strokeColor(Color.RED)
                 .strokeWidth(3f));
-        redCircles.add(circle); // ← se añade a la lista roja para que se limpie al toggle off
+        redCircles.add(circle);
         Toast.makeText(this, "Zona de robo marcada en el mapa", Toast.LENGTH_SHORT).show();
     }
 
@@ -244,10 +264,11 @@ public class Pantalla_Principal_con_Mapa extends AppCompatActivity implements On
 
         navigationView.setNavigationItemSelectedListener(item -> {
             int id = item.getItemId();
-            if (id == R.id.nav_lockdown) {  // asumo que tienes este id en drawer_menu.xml
+            if (id == R.id.nav_lockdown) {
                 startActivity(new Intent(this, Configuracion_con_Bloqueo_Total.class));
+            } else if (id == R.id.nav_profile) {
+                startActivity(new Intent(this, Perfil.class));
             }
-            // Agrega más items según tu menú
             drawerLayout.closeDrawer(Gravity.RIGHT);
             return true;
         });
@@ -257,10 +278,5 @@ public class Pantalla_Principal_con_Mapa extends AppCompatActivity implements On
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         updateMyLocationOnMap();
-
-        // Opcional: habilitar botón "Mi ubicación" nativo de Google Maps
-        // if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-        //     mMap.setMyLocationEnabled(true);
-        // }
     }
 }

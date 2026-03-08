@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-    <group android:checkableBehavior="single">
+    <group android:checkableBehavior="none">
+        <item
+            android:id="@+id/nav_profile"
+            android:icon="@drawable/ic_person"
+            android:title="Perfil" />
         <item
             android:id="@+id/nav_lockdown"
             android:icon="@drawable/ic_shield_security"
-            android:title="Bloqueo total" />
+            android:title="Bloqueo total/config" />
     </group>
 </menu>

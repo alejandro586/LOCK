@@ -144,7 +144,7 @@
             android:layout_marginBottom="32dp"
             app:elevation="8dp"/>
 
-        <!-- FAB compartir ubicación (agregado, pero opcional si no lo quieres) -->
+        <!-- FAB compartir ubicación (reposicionado al lado de Reportar Incidente) -->
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/share_location_button"
             android:layout_width="wrap_content"
@@ -152,10 +152,11 @@
             android:src="@drawable/ic_share"
             app:backgroundTint="@color/primary_turquoise"
             app:tint="@color/text_white"
-            app:layout_constraintBottom_toTopOf="@id/report_button"
-            app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginBottom="16dp"
-            android:layout_marginEnd="16dp"/>
+            app:layout_constraintBottom_toBottomOf="@id/report_button"
+            app:layout_constraintTop_toTopOf="@id/report_button"
+            app:layout_constraintStart_toEndOf="@id/report_button"
+            android:layout_marginStart="12dp"
+            app:fabSize="mini"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
@@ -168,6 +169,29 @@
         app:headerLayout="@layout/nav_header_main"
         app:menu="@menu/drawer_menu"
         app:itemTextColor="@color/text_white"
-        app:itemIconTint="@color/primary_turquoise" />
+        app:itemIconTint="@color/primary_turquoise">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:padding="24dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_logout"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:text="Cerrar Sesión"
+                android:textAllCaps="false"
+                android:textColor="@color/text_white"
+                android:textStyle="bold"
+                app:cornerRadius="28dp"
+                app:backgroundTint="@color/rojo"
+                app:icon="@drawable/ic_cancel"
+                app:iconTint="@color/text_white"
+                app:iconGravity="textStart" />
+        </FrameLayout>
+
+    </com.google.android.material.navigation.NavigationView>
 
 </androidx.drawerlayout.widget.DrawerLayout>

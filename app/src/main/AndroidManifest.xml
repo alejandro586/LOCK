@@ -30,7 +30,7 @@
             android:exported="false" />
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBctPrXI-wr3pT6tFasQiVsO706wDrwXYY" />
+            android:value="AIzaSyBctPrXI-wr3pT6tFasQiVsO706wDrwXYY"/>
 
         <activity
             android:name=".Seccion_Premium"

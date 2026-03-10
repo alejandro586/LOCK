@@ -52,6 +52,7 @@ dependencies {
     implementation("com.google.android.libraries.places:places:3.5.0") // o la más nueva disponible
     implementation(libs.play.services.location)
 
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

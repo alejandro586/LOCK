@@ -6,8 +6,10 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.Gravity;
 import android.widget.ImageButton;
 import android.widget.Toast;
@@ -30,10 +32,15 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.Circle;
 import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
@@ -45,12 +52,21 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 
 public class Pantalla_Principal_con_Mapa extends AppCompatActivity implements OnMapReadyCallback {
+
+    private static final String TAG = "MapaRutas";
 
     private GoogleMap mMap;
     private DrawerLayout drawerLayout;
@@ -67,6 +83,14 @@ public class Pantalla_Principal_con_Mapa extends AppCompatActivity implements On
     private static final int REQUEST_CODE_SURVEY = 1001;
 
     private AutocompleteSupportFragment autocompleteFragment;
+
+    // Para rutas
+    private LatLng originPoint;
+    private LatLng destinationPoint;
+    private Polyline currentRoutePolyline;
+
+    private Marker originMarker;
+    private Marker destinationMarker;
 
     private final ActivityResultLauncher<String> locationPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -113,17 +137,37 @@ public class Pantalla_Principal_con_Mapa extends AppCompatActivity implements On
         checkAndRequestLocationPermission();
     }
 
+    @Override
+    public void onMapReady(@NonNull GoogleMap googleMap) {
+        mMap = googleMap;
+        updateMyLocationOnMap();
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                == PackageManager.PERMISSION_GRANTED) {
+            mMap.setMyLocationEnabled(true);
+        }
+    }
+
     private void setupPlaceAutocomplete() {
         autocompleteFragment = (AutocompleteSupportFragment)
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
         if (autocompleteFragment == null) {
-            Toast.makeText(this, "No se pudo cargar el fragmento de búsqueda", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No se pudo cargar la barra de búsqueda", Toast.LENGTH_LONG).show();
             return;
         }
 
-        autocompleteFragment.setHint("Buscar lugar o dirección...");
+        autocompleteFragment.setHint("¿A dónde quieres ir?");
+
         autocompleteFragment.setCountry("PE");
+
+        // Bias hacia ubicación actual
+        if (lastKnownLocation != null) {
+            autocompleteFragment.setLocationBias(com.google.android.libraries.places.api.model.RectangularBounds.newInstance(
+                    new LatLng(lastKnownLocation.latitude - 0.5, lastKnownLocation.longitude - 0.5),
+                    new LatLng(lastKnownLocation.latitude + 0.5, lastKnownLocation.longitude + 0.5)
+            ));
+        }
 
         autocompleteFragment.setPlaceFields(Arrays.asList(
                 Place.Field.ID,
@@ -137,17 +181,30 @@ public class Pantalla_Principal_con_Mapa extends AppCompatActivity implements On
             public void onPlaceSelected(@NonNull Place place) {
                 LatLng latLng = place.getLatLng();
                 if (latLng != null && mMap != null) {
-                    mMap.addMarker(new MarkerOptions()
+                    // Limpiar ruta y marcador destino anterior
+                    if (currentRoutePolyline != null) {
+                        currentRoutePolyline.remove();
+                        currentRoutePolyline = null;
+                    }
+                    if (destinationMarker != null) {
+                        destinationMarker.remove();
+                    }
+
+                    // Marcador destino (rojo)
+                    destinationMarker = mMap.addMarker(new MarkerOptions()
                             .position(latLng)
                             .title(place.getName())
-                            .snippet(place.getAddress()));
+                            .snippet(place.getAddress())
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
 
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f));
+                    destinationPoint = latLng;
+                    originPoint = lastKnownLocation;
 
-                    lastKnownLocation = latLng;
+                    // Calcular y dibujar ruta
+                    calculateRoute();
 
                     Toast.makeText(Pantalla_Principal_con_Mapa.this,
-                            "Lugar seleccionado: " + place.getName(),
+                            "Calculando ruta hacia: " + place.getName(),
                             Toast.LENGTH_SHORT).show();
                 }
             }
@@ -160,6 +217,152 @@ public class Pantalla_Principal_con_Mapa extends AppCompatActivity implements On
             }
         });
     }
+
+    private void calculateRoute() {
+        if (originPoint == null || destinationPoint == null) {
+            Toast.makeText(this, "Falta origen o destino", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        new GetDirectionsTask().execute();
+    }
+
+    private class GetDirectionsTask extends AsyncTask<Void, Void, List<LatLng>> {
+        private String errorMsg = null;
+
+        @Override
+        protected List<LatLng> doInBackground(Void... voids) {
+            try {
+                String urlStr = "https://maps.googleapis.com/maps/api/directions/json?" +
+                        "origin=" + originPoint.latitude + "," + originPoint.longitude +
+                        "&destination=" + destinationPoint.latitude + "," + destinationPoint.longitude +
+                        "&mode=driving" +
+                        "&key=AIzaSyBctPrXI-wr3pT6tFasQiVsO706wDrwXYY";
+
+                Log.d(TAG, "URL Directions: " + urlStr);
+
+                URL url = new URL(urlStr);
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.setConnectTimeout(15000);
+                conn.setReadTimeout(15000);
+
+                int responseCode = conn.getResponseCode();
+                Log.d(TAG, "Código HTTP: " + responseCode);
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                StringBuilder content = new StringBuilder();
+                String line;
+                while ((line = in.readLine()) != null) {
+                    content.append(line);
+                }
+                in.close();
+                conn.disconnect();
+
+                JSONObject json = new JSONObject(content.toString());
+                String status = json.optString("status", "DESCONOCIDO");
+
+                if (!"OK".equals(status)) {
+                    errorMsg = "Status: " + status;
+                    if (json.has("error_message")) {
+                        errorMsg += " → " + json.getString("error_message");
+                    }
+                    return null;
+                }
+
+                JSONArray routes = json.getJSONArray("routes");
+                if (routes.length() == 0) {
+                    errorMsg = "No se encontraron rutas";
+                    return null;
+                }
+
+                JSONObject overview = routes.getJSONObject(0).getJSONObject("overview_polyline");
+                String encoded = overview.getString("points");
+
+                return decodePolyline(encoded);
+            } catch (Exception e) {
+                errorMsg = e.getClass().getSimpleName() + ": " + e.getMessage();
+                Log.e(TAG, "Error en Directions", e);
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<LatLng> points) {
+            if (points != null && !points.isEmpty()) {
+                PolylineOptions polyOptions = new PolylineOptions()
+                        .addAll(points)
+                        .width(10f)
+                        .color(Color.BLUE)
+                        .geodesic(true);
+
+                currentRoutePolyline = mMap.addPolyline(polyOptions);
+
+                LatLngBounds.Builder builder = new LatLngBounds.Builder();
+                builder.include(originPoint);
+                builder.include(destinationPoint);
+                for (LatLng p : points) builder.include(p);
+
+                mMap.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 120));
+
+                Toast.makeText(Pantalla_Principal_con_Mapa.this,
+                        "Ruta trazada hacia tu destino",
+                        Toast.LENGTH_SHORT).show();
+            } else {
+                String msg = "No se pudo trazar la ruta:\n" + (errorMsg != null ? errorMsg : "error desconocido");
+                Toast.makeText(Pantalla_Principal_con_Mapa.this, msg, Toast.LENGTH_LONG).show();
+                Log.e(TAG, msg);
+            }
+        }
+    }
+
+    private List<LatLng> decodePolyline(String encoded) {
+        List<LatLng> poly = new ArrayList<>();
+        int index = 0, len = encoded.length();
+        int lat = 0, lng = 0;
+
+        while (index < len) {
+            int b, shift = 0, result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lat += dlat;
+
+            shift = 0;
+            result = 0;
+            do {
+                b = encoded.charAt(index++) - 63;
+                result |= (b & 0x1f) << shift;
+                shift += 5;
+            } while (b >= 0x20);
+            int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+            lng += dlng;
+
+            LatLng point = new LatLng(lat / 1E5, lng / 1E5);
+            poly.add(point);
+        }
+        return poly;
+    }
+
+    private void updateMyLocationOnMap() {
+        if (mMap == null) return;
+
+        if (originMarker != null) originMarker.remove();
+
+        originMarker = mMap.addMarker(new MarkerOptions()
+                .position(lastKnownLocation)
+                .title("Donde estoy ahora")
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastKnownLocation, 15f));
+    }
+
+    // ────────────────────────────────────────────────────────────────────────
+    // TODAS las funciones originales que tenías se mantienen intactas
+    // ────────────────────────────────────────────────────────────────────────
 
     private void showLogoutDialog() {
         AlertDialog dialog = new AlertDialog.Builder(this, R.style.CustomAlertDialogTheme)
@@ -201,12 +404,6 @@ public class Pantalla_Principal_con_Mapa extends AppCompatActivity implements On
                     .addOnFailureListener(e -> Toast.makeText(this,
                             "No se pudo obtener ubicación: " + e.getMessage(), Toast.LENGTH_SHORT).show());
         }
-    }
-
-    private void updateMyLocationOnMap() {
-        if (mMap == null) return;
-        mMap.addMarker(new MarkerOptions().position(lastKnownLocation).title("Mi ubicación actual"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(lastKnownLocation, 15f));
     }
 
     private void setupChips() {
@@ -354,7 +551,6 @@ public class Pantalla_Principal_con_Mapa extends AppCompatActivity implements On
         shareIntent.setType("text/plain");
         shareIntent.putExtra(Intent.EXTRA_TEXT, message);
 
-        // Muestra el selector de apps (WhatsApp, Mensajes, Telegram, etc.)
         startActivity(Intent.createChooser(shareIntent, "Compartir ubicación vía..."));
     }
 
@@ -388,16 +584,5 @@ public class Pantalla_Principal_con_Mapa extends AppCompatActivity implements On
             drawerLayout.closeDrawer(Gravity.RIGHT);
             return true;
         });
-    }
-
-    @Override
-    public void onMapReady(@NonNull GoogleMap googleMap) {
-        mMap = googleMap;
-        updateMyLocationOnMap();
-
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED) {
-            mMap.setMyLocationEnabled(true);
-        }
     }
 }

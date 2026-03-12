@@ -14,12 +14,13 @@ public class PinActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        
+
         // Bloquear el menú de apagado (Power Menu) y barra de estado
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED
                 | WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD
                 | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON
-                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON);
+                | WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+                | WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         binding = ActivityPinBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
@@ -40,9 +41,5 @@ public class PinActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    public void onBackPressed() {
-        // Deshabilitar el botón atrás para que no puedan salir
-        // super.onBackPressed(); 
-    }
+
 }

@@ -50,6 +50,10 @@ dependencies {
     implementation("com.google.code.gson:gson:2.11.0")
     implementation("com.github.bumptech.glide:glide:4.16.0")  // Última estable al 2026
     implementation("com.google.android.libraries.places:places:3.5.0") // o la más nueva disponible
+
+    implementation("io.github.jan-tennert.supabase:supabase-kt:2.4.0")  // o versión más nueva
+    implementation("io.github.jan-tennert.supabase:storage-kt:2.4.0")
+
     implementation(libs.play.services.location)
 
 

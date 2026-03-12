@@ -1,10 +1,10 @@
 package com.example.lockapp;
 
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
@@ -15,6 +15,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.bumptech.glide.Glide;
 import com.example.lockapp.data.SupabaseAuthManager;
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.gson.JsonObject;
 
@@ -25,8 +26,10 @@ import java.io.OutputStream;
 
 public class Registro extends AppCompatActivity {
 
+    private static final String TAG = "Registro";
+
     private TextInputEditText etFirstName, etLastName, etAge, etDni, etEmail, etPassword;
-    private com.google.android.material.imageview.ShapeableImageView ivProfilePhoto;
+    private ShapeableImageView ivProfilePhoto;
     private MaterialButton btnRegister;
     private ImageButton btnBack, btnAgePlus, btnAgeMinus;
     private SupabaseAuthManager authManager;
@@ -39,7 +42,8 @@ public class Registro extends AppCompatActivity {
                 if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                     photoUri = result.getData().getData();
                     Glide.with(this).load(photoUri).into(ivProfilePhoto);
-                    photoFile = uriToFile(photoUri); // Usa helper corregido
+                    photoFile = uriToFile(photoUri);
+                    Log.d(TAG, "Foto seleccionada: " + (photoFile != null ? photoFile.getPath() : "null"));
                 }
             });
 
@@ -60,7 +64,7 @@ public class Registro extends AppCompatActivity {
         etEmail = findViewById(R.id.et_email);
         etPassword = findViewById(R.id.et_password);
         ivProfilePhoto = findViewById(R.id.profile_image);
-        btnRegister = findViewById(R.id.btn_register);
+        btnRegister = findViewById(R.id.btn_register);  // Asegúrate que el ID en XML sea btn_register
 
         btnBack.setOnClickListener(v -> finish());
 
@@ -85,56 +89,37 @@ public class Registro extends AppCompatActivity {
     }
 
     private void registerUser() {
-        String firstName = etFirstName.getText().toString().trim();
-        String lastName = etLastName.getText().toString().trim();
-        String ageStr = etAge.getText().toString().trim();
-        String dni = etDni.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
+        String nombre = etFirstName.getText().toString().trim();
+        String telefono = etDni.getText().toString().trim();  // Usamos telefono para DNI o número
 
-        if (firstName.isEmpty() || lastName.isEmpty() || ageStr.isEmpty() || dni.isEmpty() || email.isEmpty() || password.isEmpty() || photoFile == null) {
-            Toast.makeText(this, "Completa todos los campos y selecciona una foto", Toast.LENGTH_SHORT).show();
+        if (email.isEmpty() || password.isEmpty() || nombre.isEmpty() || telefono.isEmpty()) {
+            Toast.makeText(this, "Completa todos los campos obligatorios", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        int age = Integer.parseInt(ageStr);
-
         authManager.signUpWithEmail(email, password, new SupabaseAuthManager.AuthCallback() {
             @Override
-            public void onSuccess(String userId, String token) {
-                authManager.uploadProfilePhoto(userId, photoFile, new SupabaseAuthManager.DataCallback() {
-                    @Override
-                    public void onSuccess(String photoUrl) {
-                        JsonObject data = new JsonObject();
-                        data.addProperty("user_id", userId);
-                        data.addProperty("first_name", firstName);
-                        data.addProperty("last_name", lastName);
-                        data.addProperty("age", age);
-                        data.addProperty("dni", dni);
-                        data.addProperty("profile_photo_url", photoUrl);
+            public void onSuccess(String userId, String accessToken) {
+                runOnUiThread(() -> Toast.makeText(Registro.this, "Usuario creado. Guardando datos...", Toast.LENGTH_SHORT).show());
 
-                        authManager.insertData("profiles", data, new SupabaseAuthManager.DataCallback() {
-                            @Override
-                            public void onSuccess(String response) {
-                                runOnUiThread(() -> {
-                                    Toast.makeText(Registro.this, "Registro exitoso!", Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(Registro.this, Pantalla_Principal_con_Mapa.class));
-                                    finish();
-                                });
-                            }
+                if (photoFile != null) {
+                    authManager.uploadProfilePhoto(userId, photoFile, new SupabaseAuthManager.DataCallback() {
+                        @Override
+                        public void onSuccess(String photoUrl) {
+                            saveProfileData(userId, photoUrl, nombre, telefono);
+                        }
 
-                            @Override
-                            public void onError(String error) {
-                                runOnUiThread(() -> Toast.makeText(Registro.this, "Error al insertar: " + error, Toast.LENGTH_LONG).show());
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onError(String error) {
-                        runOnUiThread(() -> Toast.makeText(Registro.this, "Error al subir foto: " + error, Toast.LENGTH_LONG).show());
-                    }
-                });
+                        @Override
+                        public void onError(String error) {
+                            runOnUiThread(() -> Toast.makeText(Registro.this, "Foto no subida: " + error, Toast.LENGTH_LONG).show());
+                            saveProfileData(userId, null, nombre, telefono);  // Guarda sin foto
+                        }
+                    });
+                } else {
+                    saveProfileData(userId, null, nombre, telefono);
+                }
             }
 
             @Override
@@ -144,23 +129,53 @@ public class Registro extends AppCompatActivity {
         });
     }
 
-    // Helper para Uri a File (corregido para Android moderno)
+    private void saveProfileData(String userId, String photoUrl, String nombre, String telefono) {
+        JsonObject data = new JsonObject();
+        data.addProperty("user_id", userId);
+        data.addProperty("nombre", nombre);
+        data.addProperty("telefono", telefono);
+        if (photoUrl != null) {
+            data.addProperty("foto_url", photoUrl);
+        }
+
+        authManager.insertData("profiles", data, new SupabaseAuthManager.DataCallback() {
+            @Override
+            public void onSuccess(String response) {
+                runOnUiThread(() -> {
+                    Toast.makeText(Registro.this, "¡Registro completado con éxito!", Toast.LENGTH_SHORT).show();
+                    startActivity(new Intent(Registro.this, Pantalla_Principal_con_Mapa.class));
+                    finish();
+                });
+            }
+
+            @Override
+            public void onError(String error) {
+                runOnUiThread(() -> {
+                    Toast.makeText(Registro.this, "Error al guardar perfil: " + error, Toast.LENGTH_LONG).show();
+                    startActivity(new Intent(Registro.this, Pantalla_Principal_con_Mapa.class));
+                    finish();
+                });
+            }
+        });
+    }
+
     private File uriToFile(Uri uri) {
         if (uri == null) return null;
         try {
-            InputStream inputStream = getContentResolver().openInputStream(uri);
-            File file = new File(getCacheDir(), "profile_photo.jpg");
-            OutputStream outputStream = new FileOutputStream(file);
+            InputStream input = getContentResolver().openInputStream(uri);
+            File file = new File(getCacheDir(), "profile_" + System.currentTimeMillis() + ".jpg");
+            OutputStream output = new FileOutputStream(file);
             byte[] buffer = new byte[1024];
-            int bytesRead;
-            while ((bytesRead = inputStream.read(buffer)) != -1) {
-                outputStream.write(buffer, 0, bytesRead);
+            int read;
+            while ((read = input.read(buffer)) != -1) {
+                output.write(buffer, 0, read);
             }
-            inputStream.close();
-            outputStream.close();
+            output.flush();
+            output.close();
+            input.close();
             return file;
         } catch (Exception e) {
-            Toast.makeText(this, "Error al procesar foto: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Log.e(TAG, "Error al convertir URI a File", e);
             return null;
         }
     }

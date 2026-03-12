@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 import java.io.File;
@@ -21,8 +20,9 @@ public class SupabaseAuthManager {
 
     private static final String TAG = "SupabaseAuth";
 
-    private static final String SUPABASE_URL = "https://fyvlikksdzkcwppxtmaj.supabase.co";
-    private static final String ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5dmxpa2tzZHprY3dwcHh0bWFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NjE4NzgsImV4cCI6MjA4ODIzNzg3OH0.0WYiMuxdNLHU3sS21Rfp6Mf6FnSSCR7iQCx4qUuqBN8";
+    // DATOS DEL PROYECTO NUEVO (de prueba)
+    private static final String SUPABASE_URL = "https://axnnrbmyztiudesberfo.supabase.co";
+    private static final String ANON_KEY  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4bm5yYm15enRpdWRlc2JlcmZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyODg4OTMsImV4cCI6MjA4ODg2NDg5M30.msD7B-7IqVT5zyCaFaixOfPXPwRfZzh7ZY7r9w9HdHM";
 
     private static final MediaType JSON_MEDIA_TYPE = MediaType.get("application/json; charset=utf-8");
     private static final MediaType IMAGE_MEDIA_TYPE = MediaType.get("image/jpeg");
@@ -30,6 +30,9 @@ public class SupabaseAuthManager {
     private final OkHttpClient okHttpClient = new OkHttpClient();
     private final Gson gson = new Gson();
     private final Context context;
+
+    // Bucket del proyecto nuevo (cámbialo si usaste otro nombre)
+    private static final String BUCKET_NAME = "fotos_perfil_test";
 
     public SupabaseAuthManager(Context context) {
         this.context = context.getApplicationContext();
@@ -55,7 +58,7 @@ public class SupabaseAuthManager {
                 Response response = okHttpClient.newCall(request).execute();
                 String responseBody = response.body() != null ? response.body().string() : "";
 
-                Log.d(TAG, "Login respuesta: " + response.code() + " → " + responseBody);
+                Log.d(TAG, "Login respuesta: Código=" + response.code() + " → " + responseBody);
 
                 if (response.isSuccessful()) {
                     JsonObject json = gson.fromJson(responseBody, JsonObject.class);
@@ -63,17 +66,14 @@ public class SupabaseAuthManager {
                     String userId = json.getAsJsonObject("user").get("id").getAsString();
 
                     SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
-                    prefs.edit()
-                            .putString("access_token", token)
-                            .putString("user_id", userId)
-                            .apply();
+                    prefs.edit().putString("access_token", token).putString("user_id", userId).apply();
 
                     callback.onSuccess(userId, token);
                 } else {
-                    callback.onError(response.code() + " - " + responseBody);
+                    callback.onError("Login falló: " + response.code() + " - " + responseBody);
                 }
             } catch (Exception e) {
-                callback.onError("Excepción: " + e.getMessage());
+                callback.onError("Excepción en login: " + e.getMessage());
             }
         }).start();
     }
@@ -98,7 +98,7 @@ public class SupabaseAuthManager {
                 Response response = okHttpClient.newCall(request).execute();
                 String responseBody = response.body() != null ? response.body().string() : "";
 
-                Log.d(TAG, "Signup respuesta: " + response.code() + " → " + responseBody);
+                Log.d(TAG, "Signup respuesta: Código=" + response.code() + " → " + responseBody);
 
                 if (response.isSuccessful()) {
                     JsonObject json = gson.fromJson(responseBody, JsonObject.class);
@@ -106,84 +106,169 @@ public class SupabaseAuthManager {
                     String token = json.has("access_token") ? json.get("access_token").getAsString() : null;
 
                     SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
-                    SharedPreferences.Editor editor = prefs.edit();
-                    editor.putString("user_id", userId);
+                    prefs.edit().putString("user_id", userId).apply();
                     if (token != null) {
-                        editor.putString("access_token", token);
+                        prefs.edit().putString("access_token", token).apply();
                     }
-                    editor.apply();
 
                     callback.onSuccess(userId, token);
                 } else {
-                    callback.onError(response.code() + " - " + responseBody);
+                    callback.onError("Signup falló: " + response.code() + " - " + responseBody);
                 }
             } catch (Exception e) {
-                callback.onError("Excepción: " + e.getMessage());
+                callback.onError("Excepción en signup: " + e.getMessage());
             }
         }).start();
     }
 
-    // DELETE USER
-    public void deleteUser(String userId, DataCallback callback) {
+    // SUBIR FOTO DE PERFIL - ADAPTADO PARA PROYECTO NUEVO
+    public void uploadProfilePhoto(String userId, File photoFile, DataCallback callback) {
         new Thread(() -> {
             try {
                 SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
                 String token = prefs.getString("access_token", null);
                 if (token == null) {
-                    callback.onError("No hay token de sesión");
+                    callback.onError("No hay token de autenticación");
+                    Log.e(TAG, "No hay token para subir foto");
                     return;
                 }
 
-                deleteProfile(userId, new DataCallback() {
-                    @Override
-                    public void onSuccess(String response) {
-                        prefs.edit().clear().apply();
-                        callback.onSuccess("Cuenta eliminada correctamente");
-                    }
+                if (photoFile == null || !photoFile.exists()) {
+                    callback.onError("Archivo de foto no encontrado o inválido");
+                    Log.e(TAG, "Archivo no existe: " + photoFile.getAbsolutePath());
+                    return;
+                }
 
-                    @Override
-                    public void onError(String error) {
-                        callback.onError(error);
-                    }
-                });
+                Log.d(TAG, "Intentando subir foto al proyecto nuevo → userId: " + userId + " | Bucket: " + BUCKET_NAME);
 
+                RequestBody body = RequestBody.create(photoFile, IMAGE_MEDIA_TYPE);
+
+                // Path simple para test (sin carpetas para evitar cualquier problema)
+                String filePath = userId + "_perfil.jpg";
+                String uploadUrl = SUPABASE_URL + "/storage/v1/object/" + BUCKET_NAME + "/" + filePath;
+
+                Request request = new Request.Builder()
+                        .url(uploadUrl)
+                        .put(body)
+                        .header("apikey", ANON_KEY)
+                        .header("Authorization", "Bearer " + token)
+                        .header("Content-Type", "image/jpeg")
+                        .header("x-upsert", "true")
+                        .header("x-client-info", "android-okhttp-test")
+                        .build();
+
+                Response response = okHttpClient.newCall(request).execute();
+                String bodyStr = response.body() != null ? response.body().string() : "";
+
+                Log.d(TAG, "Upload respuesta (proyecto nuevo): Código=" + response.code() + " → " + bodyStr);
+
+                if (response.isSuccessful()) {
+                    String photoUrl = SUPABASE_URL + "/storage/v1/object/public/" + BUCKET_NAME + "/" + filePath;
+                    Log.d(TAG, "Foto subida OK en proyecto nuevo. URL pública: " + photoUrl);
+                    callback.onSuccess(photoUrl);
+                } else {
+                    if (response.code() == 401 || response.code() == 403) {
+                        callback.onError("Token inválido o expirado. Inicia sesión nuevamente.");
+                    } else {
+                        callback.onError("Error al subir foto en proyecto nuevo: " + response.code() + " - " + bodyStr);
+                    }
+                }
             } catch (Exception e) {
-                callback.onError("Excepción: " + e.getMessage());
+                Log.e(TAG, "Excepción grave al subir foto", e);
+                callback.onError("Error inesperado al subir foto: " + e.getMessage());
             }
         }).start();
     }
 
-    private void deleteProfile(String userId, DataCallback callback) {
-        try {
-            SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
-            String token = prefs.getString("access_token", ANON_KEY);
-            String authHeader = "Bearer " + token;
+    // FETCH PROFILE
+    public void fetchProfile(String userId, DataCallback callback) {
+        new Thread(() -> {
+            try {
+                SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
+                String token = prefs.getString("access_token", null);
+                if (token == null) {
+                    callback.onError("No hay token");
+                    return;
+                }
+                String authHeader = "Bearer " + token;
 
-            Request request = new Request.Builder()
-                    .url(SUPABASE_URL + "/rest/v1/profiles?user_id=eq." + userId)
-                    .delete()
-                    .header("apikey", ANON_KEY)
-                    .header("Authorization", authHeader)
-                    .build();
+                String url = SUPABASE_URL + "/rest/v1/profiles?select=nombre,telefono,foto_url&user_id=eq." + userId;
 
-            Response response = okHttpClient.newCall(request).execute();
-            if (response.isSuccessful()) {
-                callback.onSuccess("Perfil borrado");
-            } else {
-                callback.onError("Error borrando perfil: " + response.code());
+                Request request = new Request.Builder()
+                        .url(url)
+                        .get()
+                        .header("apikey", ANON_KEY)
+                        .header("Authorization", authHeader)
+                        .build();
+
+                Response response = okHttpClient.newCall(request).execute();
+                String bodyStr = response.body() != null ? response.body().string() : "";
+
+                Log.d(TAG, "Fetch profile respuesta: Código=" + response.code() + " → " + bodyStr);
+
+                if (response.isSuccessful()) {
+                    callback.onSuccess(bodyStr);
+                } else {
+                    callback.onError("Error al cargar perfil: " + response.code() + " - " + bodyStr);
+                }
+            } catch (Exception e) {
+                callback.onError("Excepción en fetchProfile: " + e.getMessage());
             }
-        } catch (Exception e) {
-            callback.onError(e.getMessage());
-        }
+        }).start();
     }
 
-    // INSERTAR DATOS
+    // UPDATE PROFILE
+    public void updateProfile(String userId, JsonObject data, DataCallback callback) {
+        new Thread(() -> {
+            try {
+                SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
+                String token = prefs.getString("access_token", null);
+                if (token == null) {
+                    callback.onError("No hay token");
+                    return;
+                }
+                String authHeader = "Bearer " + token;
+
+                RequestBody body = RequestBody.create(gson.toJson(data), JSON_MEDIA_TYPE);
+
+                String url = SUPABASE_URL + "/rest/v1/profiles?user_id=eq." + userId;
+
+                Request request = new Request.Builder()
+                        .url(url)
+                        .patch(body)
+                        .header("apikey", ANON_KEY)
+                        .header("Authorization", authHeader)
+                        .header("Content-Type", "application/json")
+                        .header("Prefer", "return=minimal")
+                        .build();
+
+                Response response = okHttpClient.newCall(request).execute();
+                String bodyStr = response.body() != null ? response.body().string() : "";
+
+                Log.d(TAG, "Update profile respuesta: Código=" + response.code() + " → " + bodyStr);
+
+                if (response.isSuccessful()) {
+                    callback.onSuccess("Perfil actualizado correctamente");
+                } else {
+                    callback.onError("Error al actualizar perfil: " + response.code() + " - " + bodyStr);
+                }
+            } catch (Exception e) {
+                callback.onError("Excepción en updateProfile: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    // INSERT DATA
     public void insertData(String tableName, JsonObject data, DataCallback callback) {
         new Thread(() -> {
             try {
                 SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
                 String token = prefs.getString("access_token", null);
-                String authHeader = token != null ? "Bearer " + token : "Bearer " + ANON_KEY;
+                if (token == null) {
+                    callback.onError("No hay token");
+                    return;
+                }
+                String authHeader = "Bearer " + token;
 
                 RequestBody body = RequestBody.create(gson.toJson(data), JSON_MEDIA_TYPE);
 
@@ -199,114 +284,81 @@ public class SupabaseAuthManager {
                 Response response = okHttpClient.newCall(request).execute();
                 String bodyStr = response.body() != null ? response.body().string() : "";
 
+                Log.d(TAG, "Insert en " + tableName + " respuesta: Código=" + response.code() + " → " + bodyStr);
+
                 if (response.isSuccessful()) {
-                    callback.onSuccess(bodyStr);
+                    callback.onSuccess("Datos insertados en " + tableName);
                 } else {
-                    callback.onError(response.code() + " - " + bodyStr);
+                    callback.onError("Error al insertar en " + tableName + ": " + response.code() + " - " + bodyStr);
                 }
             } catch (Exception e) {
-                callback.onError("Excepción: " + e.getMessage());
+                callback.onError("Excepción en insertData: " + e.getMessage());
             }
         }).start();
     }
 
-    // UPLOAD FOTO
-    public void uploadProfilePhoto(String userId, File photoFile, DataCallback callback) {
+    // CLEAN PROFILE AND DELETE PHOTO
+    public void cleanUserProfileAndDeletePhoto(String userId, DataCallback callback) {
         new Thread(() -> {
             try {
                 SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
-                String token = prefs.getString("access_token", ANON_KEY);
-                String authHeader = "Bearer " + token;
-
-                RequestBody body = RequestBody.create(photoFile, IMAGE_MEDIA_TYPE);
-
-                Request request = new Request.Builder()
-                        .url(SUPABASE_URL + "/storage/v1/object/profiles/" + userId + ".jpg")
-                        .post(body)
-                        .header("apikey", ANON_KEY)
-                        .header("Authorization", authHeader)
-                        .header("Content-Type", "image/jpeg")
-                        .header("x-upsert", "true") // Para permitir sobrescribir si ya existe
-                        .build();
-
-                Response response = okHttpClient.newCall(request).execute();
-                String bodyStr = response.body() != null ? response.body().string() : "";
-
-                if (response.isSuccessful()) {
-                    // Supabase Storage devuelve un JSON con la "Key" (ruta)
-                    callback.onSuccess(SUPABASE_URL + "/storage/v1/object/public/profiles/" + userId + ".jpg");
-                } else {
-                    callback.onError(response.code() + " - " + bodyStr);
+                String token = prefs.getString("access_token", null);
+                if (token == null) {
+                    callback.onError("No hay token");
+                    return;
                 }
-            } catch (Exception e) {
-                callback.onError("Excepción: " + e.getMessage());
-            }
-        }).start();
-    }
-
-    // FETCH PERFIL
-    public void fetchProfile(String userId, DataCallback callback) {
-        new Thread(() -> {
-            try {
-                SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
-                String token = prefs.getString("access_token", ANON_KEY);
                 String authHeader = "Bearer " + token;
 
-                Request request = new Request.Builder()
-                        .url(SUPABASE_URL + "/rest/v1/profiles?select=*&user_id=eq." + userId)
-                        .get()
+                // Borrar foto (si existe)
+                String filePath = userId + "_perfil.jpg";
+                String deletePhotoUrl = SUPABASE_URL + "/storage/v1/object/" + BUCKET_NAME + "/" + filePath;
+
+                Request deletePhotoRequest = new Request.Builder()
+                        .url(deletePhotoUrl)
+                        .delete()
                         .header("apikey", ANON_KEY)
                         .header("Authorization", authHeader)
                         .build();
 
-                Response response = okHttpClient.newCall(request).execute();
-                String bodyStr = response.body() != null ? response.body().string() : "";
+                Response photoResponse = okHttpClient.newCall(deletePhotoRequest).execute();
+                String photoBody = photoResponse.body() != null ? photoResponse.body().string() : "";
+                Log.d(TAG, "Delete foto respuesta: Código=" + photoResponse.code() + " → " + photoBody);
 
-                if (response.isSuccessful()) {
-                    callback.onSuccess(bodyStr);
-                } else {
-                    callback.onError(response.code() + " - " + bodyStr);
-                }
-            } catch (Exception e) {
-                callback.onError("Excepción: " + e.getMessage());
-            }
-        }).start();
-    }
+                // Limpiar campos en profiles
+                JsonObject cleanData = new JsonObject();
+                cleanData.addProperty("nombre", (String) null);
+                cleanData.addProperty("telefono", (String) null);
+                cleanData.addProperty("foto_url", (String) null);
 
-    // UPDATE PERFIL
-    public void updateProfile(String userId, JsonObject data, DataCallback callback) {
-        new Thread(() -> {
-            try {
-                SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
-                String token = prefs.getString("access_token", ANON_KEY);
-                String authHeader = "Bearer " + token;
+                RequestBody cleanBody = RequestBody.create(gson.toJson(cleanData), JSON_MEDIA_TYPE);
 
-                RequestBody body = RequestBody.create(gson.toJson(data), JSON_MEDIA_TYPE);
+                String updateUrl = SUPABASE_URL + "/rest/v1/profiles?user_id=eq." + userId;
 
-                Request request = new Request.Builder()
-                        .url(SUPABASE_URL + "/rest/v1/profiles?user_id=eq." + userId)
-                        .patch(body)
+                Request cleanRequest = new Request.Builder()
+                        .url(updateUrl)
+                        .patch(cleanBody)
                         .header("apikey", ANON_KEY)
                         .header("Authorization", authHeader)
                         .header("Content-Type", "application/json")
                         .header("Prefer", "return=minimal")
                         .build();
 
-                Response response = okHttpClient.newCall(request).execute();
-                String bodyStr = response.body() != null ? response.body().string() : "";
+                Response cleanResponse = okHttpClient.newCall(cleanRequest).execute();
+                String cleanBodyStr = cleanResponse.body() != null ? cleanResponse.body().string() : "";
+                Log.d(TAG, "Limpieza rasgos respuesta: Código=" + cleanResponse.code() + " → " + cleanBodyStr);
 
-                if (response.isSuccessful()) {
-                    callback.onSuccess(bodyStr);
+                if ((photoResponse.isSuccessful() || photoResponse.code() == 404) && cleanResponse.isSuccessful()) {
+                    callback.onSuccess("Foto eliminada (o no existía) y perfil limpiado");
                 } else {
-                    callback.onError(response.code() + " - " + bodyStr);
+                    callback.onError("Error al limpiar: Foto=" + photoResponse.code() + ", Rasgos=" + cleanResponse.code());
                 }
             } catch (Exception e) {
-                callback.onError("Excepción: " + e.getMessage());
+                callback.onError("Excepción en cleanUserProfileAndDeletePhoto: " + e.getMessage());
             }
         }).start();
     }
 
-    // Interfaces
+    // INTERFACES
     public interface AuthCallback {
         void onSuccess(String userId, String accessToken);
         void onError(String errorMessage);

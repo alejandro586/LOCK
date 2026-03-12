@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
@@ -28,7 +29,7 @@ public class Perfil extends AppCompatActivity {
 
     private TextInputEditText etFirstName, etLastName, etAge, etDni, etEmail, etPassword;
     private com.google.android.material.imageview.ShapeableImageView ivProfilePhoto;
-    private MaterialButton btnEditProfile;
+    private MaterialButton btnEditProfile, btnDeleteAccount;
     private ImageButton btnBack, btnAgePlus, btnAgeMinus;
     private SupabaseAuthManager authManager;
     private String userId;
@@ -71,6 +72,7 @@ public class Perfil extends AppCompatActivity {
         etPassword = findViewById(R.id.et_password);
         ivProfilePhoto = findViewById(R.id.profile_image);
         btnEditProfile = findViewById(R.id.btn_edit_profile);
+        btnDeleteAccount = findViewById(R.id.btn_delete_account);
 
         btnBack.setOnClickListener(v -> finish());
 
@@ -92,8 +94,42 @@ public class Perfil extends AppCompatActivity {
         });
 
         btnEditProfile.setOnClickListener(v -> updateProfile());
+        btnDeleteAccount.setOnClickListener(v -> showDeleteConfirmationDialog());
 
         loadProfile();
+    }
+
+    private void showDeleteConfirmationDialog() {
+        new AlertDialog.Builder(this, R.style.CustomAlertDialogTheme)
+                .setTitle("Eliminar Cuenta")
+                .setMessage("Esta acción es irreversible. ¿Estás seguro de que quieres eliminar tu cuenta y todos tus datos?")
+                .setPositiveButton("Sí, eliminar", (dialog, which) -> {
+                    deleteAccountAndExit();
+                })
+                .setNegativeButton("No", null)
+                .show();
+    }
+
+    private void deleteAccountAndExit() {
+        authManager.deleteUser(userId, new SupabaseAuthManager.DataCallback() {
+            @Override
+            public void onSuccess(String response) {
+                runOnUiThread(() -> {
+                    Toast.makeText(Perfil.this, "Cuenta eliminada permanentemente", Toast.LENGTH_LONG).show();
+                    
+                    // Redirigir al Login (MainActivity) y limpiar el stack de actividades
+                    Intent intent = new Intent(Perfil.this, MainActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                });
+            }
+
+            @Override
+            public void onError(String error) {
+                runOnUiThread(() -> Toast.makeText(Perfil.this, "Error al eliminar: " + error, Toast.LENGTH_LONG).show());
+            }
+        });
     }
 
     private void loadProfile() {
@@ -104,14 +140,22 @@ public class Perfil extends AppCompatActivity {
                 if (!jsonArray.isEmpty()) {
                     JsonObject profile = jsonArray.get(0).getAsJsonObject();
                     runOnUiThread(() -> {
-                        etFirstName.setText(profile.get("first_name").getAsString());
-                        etLastName.setText(profile.get("last_name").getAsString());
-                        etAge.setText(profile.get("age").getAsString());
-                        etDni.setText(profile.get("dni").getAsString());
-                        etEmail.setText("..."); // Fetch separado si necesitas
+                        if (profile.has("first_name") && !profile.get("first_name").isJsonNull())
+                            etFirstName.setText(profile.get("first_name").getAsString());
+                        if (profile.has("last_name") && !profile.get("last_name").isJsonNull())
+                            etLastName.setText(profile.get("last_name").getAsString());
+                        if (profile.has("age") && !profile.get("age").isJsonNull())
+                            etAge.setText(profile.get("age").getAsString());
+                        if (profile.has("dni") && !profile.get("dni").isJsonNull())
+                            etDni.setText(profile.get("dni").getAsString());
+                        
+                        etEmail.setText("..."); 
                         etPassword.setText("********");
-                        currentPhotoUrl = profile.get("profile_photo_url").getAsString();
-                        Glide.with(Perfil.this).load(currentPhotoUrl).into(ivProfilePhoto);
+
+                        if (profile.has("profile_photo_url") && !profile.get("profile_photo_url").isJsonNull()) {
+                            currentPhotoUrl = profile.get("profile_photo_url").getAsString();
+                            Glide.with(Perfil.this).load(currentPhotoUrl).into(ivProfilePhoto);
+                        }
                     });
                 }
             }
@@ -134,7 +178,13 @@ public class Perfil extends AppCompatActivity {
             return;
         }
 
-        int age = Integer.parseInt(ageStr);
+        int age;
+        try {
+            age = Integer.parseInt(ageStr);
+        } catch (NumberFormatException e) {
+            Toast.makeText(this, "Edad inválida", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
         if (photoFile != null) {
             authManager.uploadProfilePhoto(userId, photoFile, new SupabaseAuthManager.DataCallback() {
@@ -159,12 +209,17 @@ public class Perfil extends AppCompatActivity {
         data.addProperty("last_name", lastName);
         data.addProperty("age", age);
         data.addProperty("dni", dni);
-        data.addProperty("profile_photo_url", photoUrl);
+        if (photoUrl != null) {
+            data.addProperty("profile_photo_url", photoUrl);
+        }
 
         authManager.updateProfile(userId, data, new SupabaseAuthManager.DataCallback() {
             @Override
             public void onSuccess(String response) {
-                runOnUiThread(() -> Toast.makeText(Perfil.this, "Perfil actualizado!", Toast.LENGTH_SHORT).show());
+                runOnUiThread(() -> {
+                    Toast.makeText(Perfil.this, "¡Perfil actualizado con éxito!", Toast.LENGTH_SHORT).show();
+                    loadProfile();
+                });
             }
 
             @Override
@@ -174,12 +229,11 @@ public class Perfil extends AppCompatActivity {
         });
     }
 
-    // Helper para Uri a File (corregido)
     private File uriToFile(Uri uri) {
         if (uri == null) return null;
         try {
             InputStream inputStream = getContentResolver().openInputStream(uri);
-            File file = new File(getCacheDir(), "profile_photo.jpg");
+            File file = new File(getCacheDir(), "profile_photo_" + System.currentTimeMillis() + ".jpg");
             OutputStream outputStream = new FileOutputStream(file);
             byte[] buffer = new byte[1024];
             int bytesRead;
@@ -190,7 +244,6 @@ public class Perfil extends AppCompatActivity {
             outputStream.close();
             return file;
         } catch (Exception e) {
-            Toast.makeText(this, "Error al procesar foto: " + e.getMessage(), Toast.LENGTH_SHORT).show();
             return null;
         }
     }

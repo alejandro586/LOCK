@@ -2,7 +2,6 @@ package com.example.lockapp;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.example.lockapp.data.SupabaseAuthManager;
@@ -11,7 +10,6 @@ import com.example.lockapp.databinding.ActivityMainBinding;
 public class MainActivity extends AppCompatActivity {
 
     private ActivityMainBinding binding;
-    private static final String TAG = "MainActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -20,9 +18,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         SupabaseAuthManager authManager = new SupabaseAuthManager(this);
-        authManager.testConnection();
 
-        // ─── LOGIN ───────────────────────────────────────
         binding.loginButton.setOnClickListener(v -> {
             String email = binding.email.getText().toString().trim();
             String password = binding.password.getText().toString().trim();
@@ -34,7 +30,14 @@ public class MainActivity extends AppCompatActivity {
 
             authManager.loginWithEmail(email, password, new SupabaseAuthManager.AuthCallback() {
                 @Override
-                public void onSuccess(String token) {
+                public void onSuccess(String userId, String accessToken) {  // ← Ahora con 2 parámetros
+                    // Guarda user_id para usarlo en Perfil.java
+                    getSharedPreferences("auth", MODE_PRIVATE)
+                            .edit()
+                            .putString("access_token", accessToken)
+                            .putString("user_id", userId)  // ← Importante para Perfil
+                            .apply();
+
                     runOnUiThread(() -> {
                         Toast.makeText(MainActivity.this, "¡Bienvenido!", Toast.LENGTH_SHORT).show();
                         startActivity(new Intent(MainActivity.this, Pantalla_Principal_con_Mapa.class));
@@ -50,55 +53,8 @@ public class MainActivity extends AppCompatActivity {
             });
         });
 
-        // ─── REGISTRO (ahora funcional) ──────────────────
         binding.registerButton.setOnClickListener(v -> {
-            String email = binding.email.getText().toString().trim();
-            String password = binding.password.getText().toString().trim();
-
-            if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Completa correo y contraseña", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            if (password.length() < 6) {
-                Toast.makeText(this, "Contraseña mínima 6 caracteres", Toast.LENGTH_LONG).show();
-                return;
-            }
-
-            authManager.signUpWithEmail(email, password, new SupabaseAuthManager.AuthCallback() {
-                @Override
-                public void onSuccess(String token) {
-                    runOnUiThread(() -> {
-                        if (token != null) {
-                            // Signup auto-login (confirm email desactivado)
-                            Toast.makeText(MainActivity.this, "¡Cuenta creada! Bienvenido", Toast.LENGTH_SHORT).show();
-                            startActivity(new Intent(MainActivity.this, Pantalla_Principal_con_Mapa.class));
-                            finish();
-                        } else {
-                            // Confirm email activado
-                            Toast.makeText(MainActivity.this,
-                                    "Cuenta creada. Revisa tu correo para confirmar", Toast.LENGTH_LONG).show();
-                        }
-                    });
-                }
-
-                @Override
-                public void onError(String error) {
-                    runOnUiThread(() -> {
-                        String msg = "Error al registrarte: " + error;
-                        if (error.contains("duplicate key") || error.contains("already registered")) {
-                            msg = "Este correo ya está registrado. Inicia sesión.";
-                        } else if (error.contains("weak password")) {
-                            msg = "Contraseña muy débil. Usa letras, números y mínimo 6 caracteres.";
-                        }
-                        Toast.makeText(MainActivity.this, msg, Toast.LENGTH_LONG).show();
-                    });
-                }
-            });
+            startActivity(new Intent(MainActivity.this, Registro.class));
         });
-
-        // ─── ANÓNIMO ─────────────────────────────────────
-        binding.anonymousButton.setOnClickListener(v ->
-                startActivity(new Intent(MainActivity.this, Pantalla_Principal_con_Mapa.class)));
     }
 }

@@ -19,10 +19,13 @@ public class LockService extends Service {
     public void onCreate() {
         super.onCreate();
         screenReceiver = new ScreenReceiver();
-        IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
-        registerReceiver(screenReceiver, filter);
 
-        // Crear canal de notificación para el servicio en primer plano (necesario en versiones nuevas de Android)
+        // Añadimos ACTION_CLOSE_SYSTEM_DIALOGS al filtro
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_SCREEN_OFF);
+        filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
+        registerReceiver(ScreenReceiver, filter);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("lock_service", "Servicio de Bloqueo", NotificationManager.IMPORTANCE_LOW);
             NotificationManager manager = getSystemService(NotificationManager.class);
@@ -33,8 +36,13 @@ public class LockService extends Service {
 
         Notification notification = new NotificationCompat.Builder(this, "lock_service")
                 .setContentTitle("Lock App")
+
+                .setContentText("Protección de menú activa")
+                .setSmallIcon(R.mipmap.ic_launcher)
+                .setOngoing(true)
                 .setContentText("Protección activa")
                 .setSmallIcon(R.mipmap.ic_logo)
+
                 .build();
 
         startForeground(1, notification);

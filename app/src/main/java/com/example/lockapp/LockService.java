@@ -34,7 +34,7 @@ public class LockService extends Service {
         Notification notification = new NotificationCompat.Builder(this, "lock_service")
                 .setContentTitle("Lock App")
                 .setContentText("Protección activa")
-                .setSmallIcon(R.mipmap.ic_launcher)
+                .setSmallIcon(R.mipmap.ic_logo)
                 .build();
 
         startForeground(1, notification);

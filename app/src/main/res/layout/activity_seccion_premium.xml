@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/bg_light_black"
-    android:padding="24dp">
+    android:paddingHorizontal="24dp"
+    android:paddingTop="24dp">
 
     <!-- Botón atrás -->
     <ImageButton
@@ -17,138 +18,270 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Ícono corona premium -->
-    <ImageView
-        android:id="@+id/iv_premium_icon"
-        android:layout_width="110dp"
-        android:layout_height="110dp"
-        android:layout_marginTop="48dp"
-        android:src="@drawable/ic_crown"
-        app:tint="#00BFA6"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        app:layout_constraintTop_toBottomOf="@id/btn_back"
+        app:layout_constraintBottom_toTopOf="@id/btn_activate_premium">
 
-    <!-- Título -->
-    <TextView
-        android:id="@+id/tv_premium_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Premium Protection"
-        android:textColor="#FFFFFF"
-        android:textSize="30sp"
-        android:textStyle="bold"
-        android:layout_marginTop="24dp"
-        app:layout_constraintTop_toBottomOf="@id/iv_premium_icon"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Subtítulo -->
-    <TextView
-        android:id="@+id/tv_premium_subtitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Desbloquea todas las funciones avanzadas"
-        android:textColor="#00BFA6"
-        android:textSize="16sp"
-        android:layout_marginTop="12dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_premium_title"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <!-- Tabla comparativa -->
-    <com.google.android.material.card.MaterialCardView
-        android:id="@+id/cv_benefits"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        app:cardBackgroundColor="@color/surface_grey"
-        app:cardCornerRadius="20dp"
-        app:layout_constraintTop_toBottomOf="@id/tv_premium_subtitle"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="40dp">
-
-        <TableLayout
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:stretchColumns="*"
-            android:padding="20dp">
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:paddingBottom="24dp">
 
-            <TableRow>
-                <TextView android:text="Función" android:textStyle="bold" android:textColor="#FFFFFF" android:padding="14dp"/>
-                <TextView android:text="Free" android:textStyle="bold" android:textColor="#FFFFFF" android:gravity="center" android:padding="14dp"/>
-                <TextView android:text="Premium" android:textStyle="bold" android:textColor="#FFFFFF" android:gravity="center" android:padding="14dp"/>
-            </TableRow>
+            <!-- Ícono corona premium -->
+            <ImageView
+                android:id="@+id/iv_premium_icon"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:src="@drawable/ic_crown"
+                app:tint="@color/primary_turquoise" />
 
-            <!-- filas de comparación -->
-            <TableRow>
-                <TextView android:text="Compartir ubicación en tiempo real" android:textColor="#FFFFFF" android:padding="14dp"/>
-                <ImageView android:src="@drawable/ic_cancel" app:tint="#FF5252" android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center"/>
-                <ImageView android:src="@drawable/ic_check" app:tint="#00BFA6" android:layout_width="32dp" android:layout_height="32dp" android:layout_gravity="center"/>
-            </TableRow>
+            <!-- Título -->
+            <TextView
+                android:id="@+id/tv_premium_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Premium Protection."
+                android:textColor="#FFFFFF"
+                android:textSize="28sp"
+                android:textStyle="bold"
+                android:layout_marginTop="16dp" />
 
-            <!-- ... agrega las otras filas que ya tenías ... -->
+            <!-- Subtítulo -->
+            <TextView
+                android:id="@+id/tv_premium_subtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Desbloquea todas las funciones avanzadas"
+                android:textColor="@color/primary_turquoise"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp" />
 
-        </TableLayout>
-    </com.google.android.material.card.MaterialCardView>
+            <!-- Tabla comparativa -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cv_benefits"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardBackgroundColor="@color/surface_grey"
+                app:cardCornerRadius="20dp"
+                android:layout_marginTop="32dp">
 
-    <!-- Botón para ver novedades / mejoras detalladas -->
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btn_view_novedades"
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:text="Ver qué hay de nuevo en Premium"
-        android:textAllCaps="false"
-        android:textColor="#121212"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        app:backgroundTint="#00BFA6"
-        app:cornerRadius="16dp"
-        app:layout_constraintTop_toBottomOf="@id/cv_benefits"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp"/>
+                <TableLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:stretchColumns="*"
+                    android:padding="16dp">
 
-    <!-- Precio y trial -->
-    <TextView
-        android:id="@+id/tv_price"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="S/ 9.90 / mes"
-        android:textColor="#FFFFFF"
-        android:textSize="34sp"
-        android:textStyle="bold"
-        app:layout_constraintTop_toBottomOf="@id/btn_view_novedades"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="32dp"/>
+                    <TableRow>
+                        <TextView android:text="Función" android:textStyle="bold" android:textColor="#FFFFFF" android:padding="10dp" android:textSize="12sp"/>
+                        <TextView android:text="Free" android:textStyle="bold" android:textColor="#FFFFFF" android:gravity="center" android:padding="10dp" android:textSize="12sp"/>
+                        <TextView android:text="Premium" android:textStyle="bold" android:textColor="#FFFFFF" android:gravity="center" android:padding="10dp" android:textSize="12sp"/>
+                    </TableRow>
 
-    <TextView
-        android:id="@+id/tv_trial_note"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Prueba 7 días gratis • Cancela cuando quieras"
-        android:textColor="#9DA4B0"
-        android:textSize="14sp"
-        app:layout_constraintBottom_toTopOf="@id/btn_activate_premium"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="16dp"/>
+                    <TableRow>
+                        <TextView android:text="Zonas en tiempo real" android:textColor="#FFFFFF" android:padding="10dp" android:textSize="12sp"/>
+                        <ImageView android:src="@drawable/ic_cancel" app:tint="@color/rojo" android:layout_width="24dp" android:layout_height="24dp" android:layout_gravity="center"/>
+                        <ImageView android:src="@drawable/ic_check" app:tint="@color/primary_turquoise" android:layout_width="24dp" android:layout_height="24dp" android:layout_gravity="center"/>
+                    </TableRow>
 
+                    <TableRow>
+                        <TextView android:text="Bloqueo remoto" android:textColor="#FFFFFF" android:padding="10dp" android:textSize="12sp"/>
+                        <ImageView android:src="@drawable/ic_cancel" app:tint="@color/rojo" android:layout_width="24dp" android:layout_height="24dp" android:layout_gravity="center"/>
+                        <ImageView android:src="@drawable/ic_check" app:tint="@color/primary_turquoise" android:layout_width="24dp" android:layout_height="24dp" android:layout_gravity="center"/>
+                    </TableRow>
+                </TableLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Botón para ver novedades -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_view_novedades"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ver qué hay de nuevo en Premium"
+                android:textAllCaps="false"
+                android:textColor="@color/primary_turquoise"
+                android:layout_marginTop="16dp"/>
+
+            <!-- Sección de Planes (Imagen solicitada) -->
+
+            <!-- Toggle Prueba Gratuita -->
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                app:cardBackgroundColor="@color/surface_grey"
+                app:cardCornerRadius="30dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/white"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="16dp"
+                    android:gravity="center_vertical">
+
+                    <TextView
+                        android:id="@+id/tv_trial_label"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="¿No te decides? Haz la prueba gratuita."
+                        android:textColor="@color/text_white"
+                        android:textSize="14sp"
+                        android:layout_marginStart="12dp"/>
+
+                    <com.google.android.material.switchmaterial.SwitchMaterial
+                        android:id="@+id/switch_trial"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:thumbTint="@color/primary_turquoise"
+                        app:trackTint="@color/primary_dark"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Plan Anual -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_annual"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardBackgroundColor="#1A2228"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/primary_turquoise"
+                app:strokeWidth="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/primary_turquoise"
+                        android:text="TE AHORRAS 20%"
+                        android:textColor="@color/bg_light_black"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:paddingVertical="4dp"/>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="20dp">
+
+                        <TextView
+                            android:id="@+id/tv_annual_title"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Plan anual"
+                            android:textColor="@color/text_white"
+                            android:textSize="20sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:id="@+id/tv_annual_desc"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@id/tv_annual_title"
+                            android:text="12 meses • 95,04 PEN"
+                            android:textColor="@color/text_grey"
+                            android:textSize="14sp"
+                            android:layout_marginTop="4dp"/>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_centerVertical="true"
+                            android:text="7,92 PEN/mes"
+                            android:textColor="@color/text_white"
+                            android:textSize="16sp"
+                            android:textStyle="bold"/>
+                    </RelativeLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Plan Mensual -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/card_monthly"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground"
+                app:cardBackgroundColor="#1A2228"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeColor="@color/surface_grey"
+                app:strokeWidth="1dp">
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:padding="20dp">
+
+                    <TextView
+                        android:id="@+id/tv_monthly_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mensual"
+                        android:textColor="@color/text_white"
+                        android:textSize="18sp" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:text="9,90 PEN/mes"
+                        android:textColor="@color/text_white"
+                        android:textSize="16sp" />
+                </RelativeLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <!-- Botón Principal -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_activate_premium"
         android:layout_width="match_parent"
-        android:layout_height="70dp"
-        android:text="Activar Premium ahora"
+        android:layout_height="64dp"
+        android:text="Continuar"
         android:textAllCaps="false"
-        android:textColor="#121212"
-        android:textSize="20sp"
+        android:textColor="@color/bg_light_black"
+        android:textSize="18sp"
         android:textStyle="bold"
-        app:backgroundTint="#00BFA6"
-        app:cornerRadius="20dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:backgroundTint="@color/primary_turquoise"
+        app:cornerRadius="32dp"
+        app:layout_constraintBottom_toTopOf="@id/tv_footer_legal"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="40dp"/>
+        android:layout_marginBottom="12dp"/>
+
+    <TextView
+        android:id="@+id/tv_footer_legal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="La prueba gratuita se puede cancelar en cualquier momento en Google Play"
+        android:textColor="@color/text_grey"
+        android:textSize="11sp"
+        android:gravity="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginBottom="8dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

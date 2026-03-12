@@ -28,6 +28,9 @@
 
         <!-- Necesario para TextInputLayout -->
         <item name="isLightTheme">false</item>
+
+        <!-- Custom Dialog Theme -->
+        <item name="android:alertDialogTheme">@style/CustomAlertDialogTheme</item>
     </style>
 
     <style name="Theme.LockApp" parent="Base.Theme.LockApp" />
@@ -43,5 +46,18 @@
 
     <style name="Widget.App.Button" parent="Widget.Material3.Button">
         <!-- Por defecto los botones tendrán texto que contraste -->
+    </style>
+
+    <style name="CircleImage" parent="">
+        <item name="cornerSize">50%</item>
+    </style>
+
+    <!-- Style for Dark AlertDialog -->
+    <style name="CustomAlertDialogTheme" parent="Theme.Material3.DayNight.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="colorSurface">@color/surface_grey</item>
+        <item name="android:textColorPrimary">@color/text_white</item>
+        <item name="android:textColorSecondary">@color/text_grey</item>
+        <item name="android:background">@color/surface_grey</item>
     </style>
 </resources>

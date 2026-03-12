@@ -5,8 +5,10 @@ import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
+import java.io.File;
 import java.io.IOException;
 
 import okhttp3.MediaType;
@@ -15,9 +17,6 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
-/**
- * Manager de autenticación y operaciones con Supabase usando REST puro (OkHttp + Gson).
- */
 public class SupabaseAuthManager {
 
     private static final String TAG = "SupabaseAuth";
@@ -26,6 +25,7 @@ public class SupabaseAuthManager {
     private static final String ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5dmxpa2tzZHprY3dwcHh0bWFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NjE4NzgsImV4cCI6MjA4ODIzNzg3OH0.0WYiMuxdNLHU3sS21Rfp6Mf6FnSSCR7iQCx4qUuqBN8";
 
     private static final MediaType JSON_MEDIA_TYPE = MediaType.get("application/json; charset=utf-8");
+    private static final MediaType IMAGE_MEDIA_TYPE = MediaType.get("image/jpeg");
 
     private final OkHttpClient okHttpClient = new OkHttpClient();
     private final Gson gson = new Gson();
@@ -35,26 +35,7 @@ public class SupabaseAuthManager {
         this.context = context.getApplicationContext();
     }
 
-    public void testConnection() {
-        new Thread(() -> {
-            try {
-                Request request = new Request.Builder()
-                        .url(SUPABASE_URL + "/rest/v1/")
-                        .header("apikey", ANON_KEY)
-                        .header("Authorization", "Bearer " + ANON_KEY)
-                        .build();
-
-                Response response = okHttpClient.newCall(request).execute();
-                Log.d(TAG, "Conexión test: " + response.code());
-            } catch (IOException e) {
-                Log.e(TAG, "Error test conexión", e);
-            }
-        }).start();
-    }
-
-    // ────────────────────────────────────────────────
     // LOGIN
-    // ────────────────────────────────────────────────
     public void loginWithEmail(String email, String password, AuthCallback callback) {
         new Thread(() -> {
             try {
@@ -79,11 +60,15 @@ public class SupabaseAuthManager {
                 if (response.isSuccessful()) {
                     JsonObject json = gson.fromJson(responseBody, JsonObject.class);
                     String token = json.get("access_token").getAsString();
+                    String userId = json.getAsJsonObject("user").get("id").getAsString();
 
                     SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
-                    prefs.edit().putString("access_token", token).apply();
+                    prefs.edit()
+                            .putString("access_token", token)
+                            .putString("user_id", userId)
+                            .apply();
 
-                    callback.onSuccess(token);
+                    callback.onSuccess(userId, token);
                 } else {
                     callback.onError(response.code() + " - " + responseBody);
                 }
@@ -93,9 +78,7 @@ public class SupabaseAuthManager {
         }).start();
     }
 
-    // ────────────────────────────────────────────────
-    // SIGNUP (REGISTRO)  ← NUEVO MÉTODO
-    // ────────────────────────────────────────────────
+    // SIGNUP
     public void signUpWithEmail(String email, String password, AuthCallback callback) {
         new Thread(() -> {
             try {
@@ -119,17 +102,18 @@ public class SupabaseAuthManager {
 
                 if (response.isSuccessful()) {
                     JsonObject json = gson.fromJson(responseBody, JsonObject.class);
+                    String userId = json.getAsJsonObject("user").get("id").getAsString();
+                    String token = json.has("access_token") ? json.get("access_token").getAsString() : null;
 
-                    // Si confirm email está desactivado → viene token directo
-                    if (json.has("access_token")) {
-                        String token = json.get("access_token").getAsString();
-                        SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
-                        prefs.edit().putString("access_token", token).apply();
-                        callback.onSuccess(token);
-                    } else {
-                        // Caso común: necesita confirmación por email
-                        callback.onSuccess(null); // null = "revisa tu correo"
+                    SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("user_id", userId);
+                    if (token != null) {
+                        editor.putString("access_token", token);
                     }
+                    editor.apply();
+
+                    callback.onSuccess(userId, token);
                 } else {
                     callback.onError(response.code() + " - " + responseBody);
                 }
@@ -139,9 +123,61 @@ public class SupabaseAuthManager {
         }).start();
     }
 
-    // ────────────────────────────────────────────────
-    // INSERTAR DATOS (reports, etc.)
-    // ────────────────────────────────────────────────
+    // DELETE USER
+    public void deleteUser(String userId, DataCallback callback) {
+        new Thread(() -> {
+            try {
+                SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
+                String token = prefs.getString("access_token", null);
+                if (token == null) {
+                    callback.onError("No hay token de sesión");
+                    return;
+                }
+
+                deleteProfile(userId, new DataCallback() {
+                    @Override
+                    public void onSuccess(String response) {
+                        prefs.edit().clear().apply();
+                        callback.onSuccess("Cuenta eliminada correctamente");
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        callback.onError(error);
+                    }
+                });
+
+            } catch (Exception e) {
+                callback.onError("Excepción: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    private void deleteProfile(String userId, DataCallback callback) {
+        try {
+            SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
+            String token = prefs.getString("access_token", ANON_KEY);
+            String authHeader = "Bearer " + token;
+
+            Request request = new Request.Builder()
+                    .url(SUPABASE_URL + "/rest/v1/profiles?user_id=eq." + userId)
+                    .delete()
+                    .header("apikey", ANON_KEY)
+                    .header("Authorization", authHeader)
+                    .build();
+
+            Response response = okHttpClient.newCall(request).execute();
+            if (response.isSuccessful()) {
+                callback.onSuccess("Perfil borrado");
+            } else {
+                callback.onError("Error borrando perfil: " + response.code());
+            }
+        } catch (Exception e) {
+            callback.onError(e.getMessage());
+        }
+    }
+
+    // INSERTAR DATOS
     public void insertData(String tableName, JsonObject data, DataCallback callback) {
         new Thread(() -> {
             try {
@@ -174,9 +210,105 @@ public class SupabaseAuthManager {
         }).start();
     }
 
+    // UPLOAD FOTO
+    public void uploadProfilePhoto(String userId, File photoFile, DataCallback callback) {
+        new Thread(() -> {
+            try {
+                SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
+                String token = prefs.getString("access_token", ANON_KEY);
+                String authHeader = "Bearer " + token;
+
+                RequestBody body = RequestBody.create(photoFile, IMAGE_MEDIA_TYPE);
+
+                Request request = new Request.Builder()
+                        .url(SUPABASE_URL + "/storage/v1/object/profiles/" + userId + ".jpg")
+                        .post(body)
+                        .header("apikey", ANON_KEY)
+                        .header("Authorization", authHeader)
+                        .header("Content-Type", "image/jpeg")
+                        .header("x-upsert", "true") // Para permitir sobrescribir si ya existe
+                        .build();
+
+                Response response = okHttpClient.newCall(request).execute();
+                String bodyStr = response.body() != null ? response.body().string() : "";
+
+                if (response.isSuccessful()) {
+                    // Supabase Storage devuelve un JSON con la "Key" (ruta)
+                    callback.onSuccess(SUPABASE_URL + "/storage/v1/object/public/profiles/" + userId + ".jpg");
+                } else {
+                    callback.onError(response.code() + " - " + bodyStr);
+                }
+            } catch (Exception e) {
+                callback.onError("Excepción: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    // FETCH PERFIL
+    public void fetchProfile(String userId, DataCallback callback) {
+        new Thread(() -> {
+            try {
+                SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
+                String token = prefs.getString("access_token", ANON_KEY);
+                String authHeader = "Bearer " + token;
+
+                Request request = new Request.Builder()
+                        .url(SUPABASE_URL + "/rest/v1/profiles?select=*&user_id=eq." + userId)
+                        .get()
+                        .header("apikey", ANON_KEY)
+                        .header("Authorization", authHeader)
+                        .build();
+
+                Response response = okHttpClient.newCall(request).execute();
+                String bodyStr = response.body() != null ? response.body().string() : "";
+
+                if (response.isSuccessful()) {
+                    callback.onSuccess(bodyStr);
+                } else {
+                    callback.onError(response.code() + " - " + bodyStr);
+                }
+            } catch (Exception e) {
+                callback.onError("Excepción: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    // UPDATE PERFIL
+    public void updateProfile(String userId, JsonObject data, DataCallback callback) {
+        new Thread(() -> {
+            try {
+                SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
+                String token = prefs.getString("access_token", ANON_KEY);
+                String authHeader = "Bearer " + token;
+
+                RequestBody body = RequestBody.create(gson.toJson(data), JSON_MEDIA_TYPE);
+
+                Request request = new Request.Builder()
+                        .url(SUPABASE_URL + "/rest/v1/profiles?user_id=eq." + userId)
+                        .patch(body)
+                        .header("apikey", ANON_KEY)
+                        .header("Authorization", authHeader)
+                        .header("Content-Type", "application/json")
+                        .header("Prefer", "return=minimal")
+                        .build();
+
+                Response response = okHttpClient.newCall(request).execute();
+                String bodyStr = response.body() != null ? response.body().string() : "";
+
+                if (response.isSuccessful()) {
+                    callback.onSuccess(bodyStr);
+                } else {
+                    callback.onError(response.code() + " - " + bodyStr);
+                }
+            } catch (Exception e) {
+                callback.onError("Excepción: " + e.getMessage());
+            }
+        }).start();
+    }
+
     // Interfaces
     public interface AuthCallback {
-        void onSuccess(String accessToken);   // null si necesita confirm email
+        void onSuccess(String userId, String accessToken);
         void onError(String errorMessage);
     }
 

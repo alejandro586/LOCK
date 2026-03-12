@@ -15,7 +15,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingBottom="48dp">
+            android:paddingBottom="80dp">  <!-- Más padding para centrar mejor sin el botón extra -->
 
             <ImageView
                 android:id="@+id/shield_icon"
@@ -26,7 +26,7 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="48dp"/>
+                android:layout_marginTop="64dp"/>
 
             <TextView
                 android:id="@+id/title"
@@ -39,13 +39,13 @@
                 app:layout_constraintTop_toBottomOf="@id/shield_icon"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="16dp"/>
+                android:layout_marginTop="24dp"/>
 
             <TextView
                 android:id="@+id/subtitle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Regístrate o usa modo anónimo. Nunca compartimos ubicación sin permiso."
+                android:text="Inicia sesión o regístrate. Tu ubicación está siempre protegida."
                 android:textSize="14sp"
                 android:textColor="@color/text_grey"
                 android:gravity="center"
@@ -53,15 +53,15 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 android:layout_marginHorizontal="40dp"
-                android:layout_marginTop="12dp"/>
+                android:layout_marginTop="16dp"/>
 
-            <!-- Contenedor para Correo Electrónico -->
+            <!-- Correo Electrónico -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/email_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="40dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="48dp"
                 app:boxBackgroundMode="outline"
                 app:boxStrokeColor="@color/primary_turquoise"
                 app:hintTextColor="@color/text_white"
@@ -77,13 +77,13 @@
                     android:textSize="16sp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Contenedor para Contraseña -->
+            <!-- Contraseña -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/password_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="40dp"
-                android:layout_marginTop="12dp"
+                android:layout_marginTop="16dp"
                 app:boxBackgroundMode="outline"
                 app:boxStrokeColor="@color/primary_turquoise"
                 app:hintTextColor="@color/text_white"
@@ -102,14 +102,14 @@
                     android:textSize="16sp"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- BOTÓN INGRESAR (Outlined Turquesa) -->
+            <!-- BOTÓN INGRESAR -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/login_button"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="64dp"
                 android:layout_marginHorizontal="40dp"
-                android:layout_marginTop="32dp"
+                android:layout_marginTop="40dp"
                 android:text="Ingresar"
                 android:textColor="@color/primary_turquoise"
                 android:textSize="18sp"
@@ -119,37 +119,21 @@
                 app:strokeWidth="1.5dp"
                 app:layout_constraintTop_toBottomOf="@id/password_layout" />
 
-            <!-- Botón Registrarse (Outlined) -->
+            <!-- Botón Registrarse -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/register_button"
                 style="@style/Widget.Material3.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_marginHorizontal="40dp"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="24dp"
                 android:text="Registrarse"
                 android:textColor="@color/primary_turquoise"
                 android:textSize="17sp"
                 app:cornerRadius="12dp"
-                app:layout_constraintTop_toBottomOf="@id/login_button"
-                app:strokeColor="@color/primary_turquoise"
-                app:strokeWidth="1.5dp" />
-
-            <!-- Botón Continuar como anónimo (Outlined) -->
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/anonymous_button"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="60dp"
-                android:layout_marginHorizontal="40dp"
-                android:layout_marginTop="12dp"
-                android:text="Continuar como anónimo"
-                android:textColor="@color/primary_turquoise"
-                android:textSize="17sp"
                 app:strokeColor="@color/primary_turquoise"
                 app:strokeWidth="1.5dp"
-                app:cornerRadius="12dp"
-                app:layout_constraintTop_toBottomOf="@id/register_button" />
+                app:layout_constraintTop_toBottomOf="@id/login_button" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
@@ -164,6 +148,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="24dp"/>
+        android:layout_marginBottom="32dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

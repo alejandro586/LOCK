@@ -4,12 +4,14 @@ import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.os.IBinder;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.core.content.ContextCompat;
 
 public class LockService extends Service {
 
@@ -20,15 +22,19 @@ public class LockService extends Service {
         super.onCreate();
         screenReceiver = new ScreenReceiver();
 
-        // Añadimos ACTION_CLOSE_SYSTEM_DIALOGS al filtro
+        // Filtro para detectar cuando se apaga la pantalla o se intenta cerrar diálogos del sistema
         IntentFilter filter = new IntentFilter();
         filter.addAction(Intent.ACTION_SCREEN_OFF);
         filter.addAction(Intent.ACTION_CLOSE_SYSTEM_DIALOGS);
-        registerReceiver(ScreenReceiver, filter);
 
+        // Usamos ContextCompat para registrar el receptor con los flags necesarios en Android 14+
+        // Se usa RECEIVER_EXPORTED porque ACTION_CLOSE_SYSTEM_DIALOGS es un broadcast del sistema no protegido
+        ContextCompat.registerReceiver(this, screenReceiver, filter, ContextCompat.RECEIVER_EXPORTED);
+
+        // Crear canal de notificación para el servicio en primer plano (Android Oreo+)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel("lock_service", "Servicio de Bloqueo", NotificationManager.IMPORTANCE_LOW);
-            NotificationManager manager = getSystemService(NotificationManager.class);
+            NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (manager != null) {
                 manager.createNotificationChannel(channel);
             }
@@ -36,15 +42,12 @@ public class LockService extends Service {
 
         Notification notification = new NotificationCompat.Builder(this, "lock_service")
                 .setContentTitle("Lock App")
-
-                .setContentText("Protección de menú activa")
-                .setSmallIcon(R.mipmap.ic_launcher)
-                .setOngoing(true)
                 .setContentText("Protección activa")
                 .setSmallIcon(R.mipmap.ic_logo)
-
+                .setOngoing(true)
                 .build();
 
+        // Iniciar servicio en primer plano
         startForeground(1, notification);
     }
 

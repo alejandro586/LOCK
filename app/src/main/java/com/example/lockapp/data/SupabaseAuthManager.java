@@ -21,8 +21,9 @@ public class SupabaseAuthManager {
     private static final String TAG = "SupabaseAuth";
 
     // DATOS DEL PROYECTO NUEVO (de prueba)
-    private static final String SUPABASE_URL = "https://axnnrbmyztiudesberfo.supabase.co";
-    private static final String ANON_KEY  = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImF4bm5yYm15enRpdWRlc2JlcmZvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzMyODg4OTMsImV4cCI6MjA4ODg2NDg5M30.msD7B-7IqVT5zyCaFaixOfPXPwRfZzh7ZY7r9w9HdHM";
+    private static final String SUPABASE_URL = "https://fyvlikksdzkcwppxtmaj.supabase.co";
+    private static final String ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ5dmxpa2tzZHprY3dwcHh0bWFqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI2NjE4NzgsImV4cCI6MjA4ODIzNzg3OH0.0WYiMuxdNLHU3sS21Rfp6Mf6FnSSCR7iQCx4qUuqBN8";
+
 
     private static final MediaType JSON_MEDIA_TYPE = MediaType.get("application/json; charset=utf-8");
     private static final MediaType IMAGE_MEDIA_TYPE = MediaType.get("image/jpeg");

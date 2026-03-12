@@ -10,6 +10,10 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
 
+    <!-- PERMISO CRÍTICO PARA DETECTAR EL APAGADO -->
+    <uses-permission android:name="android.permission.BIND_ACCESSIBILITY_SERVICE"
+        tools:ignore="ProtectedPermissions" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -19,7 +23,20 @@
         android:roundIcon="@mipmap/ic_logo_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.LockApp">
-      
+
+        <!-- SERVICIO QUE INTERCEPTA EL MENÚ DE APAGADO -->
+        <service
+            android:name=".PowerMenuInterceptor"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.view.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.view.AccessibilityService"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
         <receiver
             android:name=".AdminReceiver"
             android:permission="android.permission.BIND_DEVICE_ADMIN"
@@ -48,36 +65,20 @@
             android:launchMode="singleInstance"
             android:excludeFromRecents="true"
             android:showOnLockScreen="true" />
-=======
-        <activity
-            android:name=".Registro"
-            android:exported="false" />
 
-
-        <activity
-            android:name=".Perfil"
-            android:exported="false" />
-
-        <activity
-            android:name=".PremiumFeaturesActivity"
-            android:exported="false" />
+        <activity android:name=".Registro" android:exported="false" />
+        <activity android:name=".Perfil" android:exported="false" />
+        <activity android:name=".PremiumFeaturesActivity" android:exported="false" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyBctPrXI-wr3pT6tFasQiVsO706wDrwXYY"/>
 
-        <activity
-            android:name=".Seccion_Premium"
-            android:exported="false" />
-        <activity
-            android:name=".Configuracion_con_Bloqueo_Total"
-            android:exported="false" />
-        <activity
-            android:name=".Encuesta_Post_Notificacion"
-            android:exported="false" />
-        <activity
-            android:name=".Pantalla_Principal_con_Mapa"
-            android:exported="false" />
+        <activity android:name=".Seccion_Premium" android:exported="false" />
+        <activity android:name=".Configuracion_con_Bloqueo_Total" android:exported="false" />
+        <activity android:name=".Encuesta_Post_Notificacion" android:exported="false" />
+        <activity android:name=".Pantalla_Principal_con_Mapa" android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -88,5 +89,4 @@
             </intent-filter>
         </activity>
     </application>
-
 </manifest>

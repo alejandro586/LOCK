@@ -35,7 +35,7 @@ public class SupabaseAuthManager {
         this.context = context.getApplicationContext();
     }
 
-    // LOGIN (Modificado para extraer userId como en signup)
+    // LOGIN
     public void loginWithEmail(String email, String password, AuthCallback callback) {
         new Thread(() -> {
             try {
@@ -60,10 +60,13 @@ public class SupabaseAuthManager {
                 if (response.isSuccessful()) {
                     JsonObject json = gson.fromJson(responseBody, JsonObject.class);
                     String token = json.get("access_token").getAsString();
-                    String userId = json.getAsJsonObject("user").get("id").getAsString(); // Extrae userId
+                    String userId = json.getAsJsonObject("user").get("id").getAsString();
 
                     SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
-                    prefs.edit().putString("access_token", token).putString("user_id", userId).apply();
+                    prefs.edit()
+                            .putString("access_token", token)
+                            .putString("user_id", userId)
+                            .apply();
 
                     callback.onSuccess(userId, token);
                 } else {
@@ -75,7 +78,7 @@ public class SupabaseAuthManager {
         }).start();
     }
 
-    // SIGNUP (Ya correcto, pero aseguro prefs para user_id)
+    // SIGNUP
     public void signUpWithEmail(String email, String password, AuthCallback callback) {
         new Thread(() -> {
             try {
@@ -103,10 +106,12 @@ public class SupabaseAuthManager {
                     String token = json.has("access_token") ? json.get("access_token").getAsString() : null;
 
                     SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
-                    prefs.edit().putString("user_id", userId);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    editor.putString("user_id", userId);
                     if (token != null) {
-                        prefs.edit().putString("access_token", token).apply();
+                        editor.putString("access_token", token);
                     }
+                    editor.apply();
 
                     callback.onSuccess(userId, token);
                 } else {
@@ -116,6 +121,60 @@ public class SupabaseAuthManager {
                 callback.onError("Excepción: " + e.getMessage());
             }
         }).start();
+    }
+
+    // DELETE USER
+    public void deleteUser(String userId, DataCallback callback) {
+        new Thread(() -> {
+            try {
+                SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
+                String token = prefs.getString("access_token", null);
+                if (token == null) {
+                    callback.onError("No hay token de sesión");
+                    return;
+                }
+
+                deleteProfile(userId, new DataCallback() {
+                    @Override
+                    public void onSuccess(String response) {
+                        prefs.edit().clear().apply();
+                        callback.onSuccess("Cuenta eliminada correctamente");
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        callback.onError(error);
+                    }
+                });
+
+            } catch (Exception e) {
+                callback.onError("Excepción: " + e.getMessage());
+            }
+        }).start();
+    }
+
+    private void deleteProfile(String userId, DataCallback callback) {
+        try {
+            SharedPreferences prefs = context.getSharedPreferences("auth", Context.MODE_PRIVATE);
+            String token = prefs.getString("access_token", ANON_KEY);
+            String authHeader = "Bearer " + token;
+
+            Request request = new Request.Builder()
+                    .url(SUPABASE_URL + "/rest/v1/profiles?user_id=eq." + userId)
+                    .delete()
+                    .header("apikey", ANON_KEY)
+                    .header("Authorization", authHeader)
+                    .build();
+
+            Response response = okHttpClient.newCall(request).execute();
+            if (response.isSuccessful()) {
+                callback.onSuccess("Perfil borrado");
+            } else {
+                callback.onError("Error borrando perfil: " + response.code());
+            }
+        } catch (Exception e) {
+            callback.onError(e.getMessage());
+        }
     }
 
     // INSERTAR DATOS
@@ -167,15 +226,15 @@ public class SupabaseAuthManager {
                         .header("apikey", ANON_KEY)
                         .header("Authorization", authHeader)
                         .header("Content-Type", "image/jpeg")
+                        .header("x-upsert", "true") // Para permitir sobrescribir si ya existe
                         .build();
 
                 Response response = okHttpClient.newCall(request).execute();
                 String bodyStr = response.body() != null ? response.body().string() : "";
 
                 if (response.isSuccessful()) {
-                    JsonObject json = gson.fromJson(bodyStr, JsonObject.class);
-                    String photoUrl = json.get("Key").getAsString(); // Ajustado para URL pública
-                    callback.onSuccess(photoUrl);
+                    // Supabase Storage devuelve un JSON con la "Key" (ruta)
+                    callback.onSuccess(SUPABASE_URL + "/storage/v1/object/public/profiles/" + userId + ".jpg");
                 } else {
                     callback.onError(response.code() + " - " + bodyStr);
                 }

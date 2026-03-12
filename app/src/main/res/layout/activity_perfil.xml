@@ -111,7 +111,7 @@
                             android:textSize="16sp"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Edad con Botones +/- (existente) -->
+                    <!-- Edad -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -184,7 +184,7 @@
                             android:inputType="text"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Correo Electrónico (Editable con precaución) -->
+                    <!-- Correo -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/email_layout"
                         android:layout_width="match_parent"
@@ -204,7 +204,7 @@
                             android:inputType="textEmailAddress"/>
                     </com.google.android.material.textfield.TextInputLayout>
 
-                    <!-- Contraseña (Editable con precaución) -->
+                    <!-- Contraseña -->
                     <com.google.android.material.textfield.TextInputLayout
                         android:id="@+id/password_layout"
                         android:layout_width="match_parent"
@@ -232,7 +232,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <!-- Botón Editar Perfil -->
+    <!-- Botón Guardar Cambios -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btn_edit_profile"
         android:layout_width="match_parent"
@@ -243,9 +243,22 @@
         android:backgroundTint="@color/primary_turquoise"
         android:textColor="@color/bg_light_black"
         app:cornerRadius="24dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btn_delete_account"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Botón Eliminar Cuenta (Más pequeño y en rojo) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_delete_account"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Eliminar Cuenta"
+        android:textColor="#FF5252"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
